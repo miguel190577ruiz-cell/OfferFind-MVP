@@ -178,6 +178,22 @@
         alert("PIN incorrecto");
       }
     }
+    function publicarOferta() {
+  const nombre = document.getElementById("nombreLocal").value;
+  const descripcion = document.getElementById("descripcionOferta").value;
+
+  if (!nombre || !descripcion) {
+    alert("Rellena todos los campos");
+    return;
+  }
+
+  document.getElementById("tituloOferta").innerText = nombre;
+  document.getElementById("textoOferta").innerText = descripcion;
+
+  alert("Oferta publicada");
+
+  volverFeed();
+    }
   </script>
 
 </body>
