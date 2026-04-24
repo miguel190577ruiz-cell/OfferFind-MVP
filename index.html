@@ -177,6 +177,12 @@
   </div>
 
   <script>
+    document.addEventListener("click", () => {
+  const video = document.getElementById("mediaOferta");
+  if (video) {
+    video.muted = false;
+  }
+});
     setTimeout(() => {
       document.getElementById("splash").style.display = "none";
       document.getElementById("app").style.display = "block";
