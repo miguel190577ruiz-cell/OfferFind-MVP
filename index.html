@@ -163,6 +163,21 @@ if (nombreGuardado && descripcionGuardada) {
   document.getElementById("tituloOferta").innerText = nombreGuardado;
   document.getElementById("textoOferta").innerText = descripcionGuardada;
 }
+    const pinGuardado = localStorage.getItem("pinComercio");
+
+if (pinGuardado) {
+  const comercioGuardado = localStorage.getItem("comercio_" + pinGuardado);
+
+  if (comercioGuardado) {
+    const datos = JSON.parse(comercioGuardado);
+
+    document.getElementById("tituloOferta").innerText = datos.nombre;
+    document.getElementById("textoOferta").innerText = datos.oferta;
+
+    const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(datos.direccion);
+    document.getElementById("btnIr").href = url;
+  }
+}
     function irComercio() {
       document.getElementById("app").style.display = "none";
       document.getElementById("comercio").style.display = "block";
