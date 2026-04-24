@@ -158,7 +158,14 @@
       document.getElementById("splash").style.display = "none";
       document.getElementById("app").style.display = "block";
     }, 1000);
+// Cargar oferta guardada
+const nombreGuardado = localStorage.getItem("nombreLocal");
+const descripcionGuardada = localStorage.getItem("descripcionOferta");
 
+if (nombreGuardado && descripcionGuardada) {
+  document.getElementById("tituloOferta").innerText = nombreGuardado;
+  document.getElementById("textoOferta").innerText = descripcionGuardada;
+}
     function irComercio() {
       document.getElementById("app").style.display = "none";
       document.getElementById("comercio").style.display = "block";
