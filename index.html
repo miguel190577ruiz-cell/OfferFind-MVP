@@ -131,26 +131,23 @@
   </div>
 
   <div id="comercio">
-    <h2>Zona Comercio</h2>
-    <p>Acceso para comercios y administración de ofertas.</p>
+  <h2>Zona Comercio</h2>
+  <p>Introduce tu PIN para gestionar tu oferta.</p>
 
-    <button class="admin-btn" onclick="entrarAdmin()">
-      Acceso administrador
-    </button>
-<div style="margin-top:30px;">
-  <input id="nombreLocal" placeholder="Nombre del local" 
-    style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none;">
+  <input id="pinComercio" placeholder="PIN del comercio"
+    style="width:100%; padding:14px; margin:20px 0 10px; border-radius:12px; border:none; font-size:18px;">
 
-  <input id="descripcionOferta" placeholder="Descripción oferta" 
-    style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none;">
-
-  <button class="admin-btn" onclick="publicarOferta()">
-    Publicar oferta
+  <button class="admin-btn" onclick="entrarComercio()">
+    Entrar como comercio
   </button>
-</div>
-    <button class="volver-btn" onclick="volverFeed()">
-      Volver al feed
-    </button>
+
+  <button class="admin-btn" onclick="entrarAdmin()">
+    Acceso administrador
+  </button>
+
+  <button class="volver-btn" onclick="volverFeed()">
+    Volver al feed
+  </button>
   </div>
 
   <script>
