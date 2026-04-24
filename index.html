@@ -172,7 +172,16 @@ if (nombreGuardado && descripcionGuardada) {
       document.getElementById("comercio").style.display = "none";
       document.getElementById("app").style.display = "block";
     }
+function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value;
 
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  alert("Acceso comercio concedido. PIN: " + pin);
+}
     function entrarAdmin() {
       const pin = prompt("Introduce PIN administrador");
 
