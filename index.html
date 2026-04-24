@@ -167,7 +167,21 @@ if (nombreGuardado && descripcionGuardada) {
       document.getElementById("app").style.display = "none";
       document.getElementById("comercio").style.display = "block";
     }
+function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value;
 
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  localStorage.setItem("pinComercio", pin);
+
+  alert("Acceso concedido");
+
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "block";
+}
     function volverFeed() {
       document.getElementById("comercio").style.display = "none";
       document.getElementById("app").style.display = "block";
