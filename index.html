@@ -132,9 +132,12 @@
       <h2 id="tituloOferta">Bar La Plaza</h2>
       <p id="textoOferta">Caña + tapa</p>
 <video id="mediaOferta" autoplay muted loop playsinline style="width:100%;"></video>
-      <button id="btnSonido" onclick="toggleSonido()" style="position:absolute; top:20px; right:20px; z-index:5;">
-  🔇
-      </button>
+      <button id="btnSonido"
+onclick="event.stopPropagation(); toggleSonido()"
+style="position:absolute; top:20px; right:20px; z-index:99999; background:black; color:white; border:none; padding:10px; border-radius:50%;">
+🔇
+</button>
+      
 <img id="imgOferta" style="width:100%; display:none;" />
       <a id="btnIr" class="btn" href="https://www.google.com/maps" target="_blank">Ir</a>
 
