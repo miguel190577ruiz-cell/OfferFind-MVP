@@ -197,7 +197,23 @@
 
       document.getElementById("tituloOferta").innerText = datos.nombre;
       document.getElementById("textoOferta").innerText = datos.oferta;
+if (datos.video) {
+  const urlMedia = "https://shy-wave-7641.miguel190577ruiz.workers.dev/" + datos.video;
 
+  if (datos.video.includes(".mp4") || datos.video.includes(".webm")) {
+    const video = document.getElementById("mediaOferta");
+    video.src = urlMedia;
+    video.style.display = "block";
+
+    document.getElementById("imgOferta").style.display = "none";
+  } else {
+    const img = document.getElementById("imgOferta");
+    img.src = urlMedia;
+    img.style.display = "block";
+
+    document.getElementById("mediaOferta").style.display = "none";
+  }
+}
       const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(datos.direccion);
       document.getElementById("btnIr").href = url;
     }
