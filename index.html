@@ -342,6 +342,24 @@ async function publicarOferta() {
 
   volverFeed();
 }
+    function toggleSonido() {
+  const video = document.getElementById("mediaOferta");
+  const btn = document.getElementById("btnSonido");
+
+  if (!video) return;
+
+  if (video.muted) {
+    video.muted = false;
+    video.volume = 1;
+    video.play();
+    btn.innerText = "🔊";
+  } else {
+    video.muted = true;
+    btn.innerText = "🔇";
+  }
+}
+
+document.getElementById("mediaOferta").addEventListener("click", toggleSonido);
   </script>
 
 </body>
