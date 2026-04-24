@@ -252,50 +252,58 @@
     }
 
     async function publicarOferta() {
-      const pin = localStorage.getItem("pinComercio");
+  const pin = localStorage.getItem("pinComercio");
 
-      if (!pin) {
-        alert("Primero entra con un PIN de comercio");
-        return;
-      }
+  if (!pin) {
+    alert("Primero entra con un PIN de comercio");
+    return;
+  }
 
-      const nombre = document.getElementById("nombreLocal").value;
-      const direccion = document.getElementById("direccionLocal").value;
-      const descripcion = document.getElementById("descripcionOferta").value;
-const video = document.getElementById("videoInput").files[0];
-      if (!nombre || !direccion || !descripcion) {
-        alert("Rellena todos los campos");
-        return;
-      }
-let videoUrl = "";
+  const nombre = document.getElementById("nombreLocal").value;
+  const direccion = document.getElementById("direccionLocal").value;
+  const descripcion = document.getElementById("descripcionOferta").value;
+  const video = document.getElementById("videoInput").files[0];
 
-if (video) {
-    const response = await fetch("https://shy-wave-7641.miguel190577ruiz.workers.dev/", {
+  if (!nombre || !direccion || !descripcion) {
+    alert("Rellena todos los campos");
+    return;
+  }
+
+  let videoUrl = "";
+
+  try {
+    if (video) {
+      const response = await fetch("https://shy-wave-7641.miguel190577ruiz.workers.dev/", {
         method: "POST",
         body: video
-    });
+      });
 
-    const data = await response.json();
-    videoUrl = data.fileName;
-}
-      const comercio = {
+      const data = await response.json();
+      videoUrl = data.fileName;
+    }
+  } catch (error) {
+    console.error("Error subiendo vídeo:", error);
+    alert("Error al subir el vídeo");
+  }
+
+  const comercio = {
     nombre: nombre,
     direccion: direccion,
     oferta: descripcion,
     video: videoUrl
-};
+  };
 
-      localStorage.setItem("comercio_" + pin, JSON.stringify(comercio));
+  localStorage.setItem("comercio_" + pin, JSON.stringify(comercio));
 
-      document.getElementById("tituloOferta").innerText = nombre;
-      document.getElementById("textoOferta").innerText = descripcion;
+  document.getElementById("tituloOferta").innerText = nombre;
+  document.getElementById("textoOferta").innerText = descripcion;
 
-      const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
-      document.getElementById("btnIr").href = url;
+  const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
+  document.getElementById("btnIr").href = url;
 
-      alert("Comercio creado y oferta publicada");
+  alert("Comercio creado y oferta publicada");
 
-      volverFeed();
+  volverFeed();
     }
   </script>
 
