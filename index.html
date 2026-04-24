@@ -1,1 +1,74 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OfferFind MVP</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: black;
+      color: white;
+    }
+
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+
+    #app {
+      display: none;
+      height: 100vh;
+      overflow-y: scroll;
+    }
+
+    .offer {
+      height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      background: #00c8ff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="splash">
+  OfferFind
+</div>
+
+<div id="app">
+  <div class="offer">
+    <h2>Bar La Plaza</h2>
+    <p>Caña + tapa</p>
+    <a class="btn" href="https://www.google.com/maps" target="_blank">Ir</a>
+  </div>
+</div>
+
+<script>
+  setTimeout(() => {
+    document.getElementById("splash").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }, 1000);
+</script>
+
+</body>
+</html>
