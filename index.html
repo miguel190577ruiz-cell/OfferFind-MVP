@@ -205,27 +205,40 @@ function entrarComercio() {
         alert("PIN incorrecto");
       }
     }
-    function publicarOferta() {
+function publicarOferta() {
+  const pin = localStorage.getItem("pinComercio");
+
   const nombre = document.getElementById("nombreLocal").value;
+  const direccion = document.getElementById("direccionLocal").value;
   const descripcion = document.getElementById("descripcionOferta").value;
 
-  if (!nombre || !descripcion) {
+  if (!nombre || !direccion || !descripcion) {
     alert("Rellena todos los campos");
     return;
   }
 
-  // GUARDAR
-  localStorage.setItem("nombreLocal", nombre);
-  localStorage.setItem("descripcionOferta", descripcion);
+  // Crear objeto comercio
+  const comercio = {
+    nombre: nombre,
+    direccion: direccion,
+    oferta: descripcion
+  };
 
-  
+  // Guardar usando el PIN como clave
+  localStorage.setItem("comercio_" + pin, JSON.stringify(comercio));
+
+  // Mostrar en el feed
   document.getElementById("tituloOferta").innerText = nombre;
   document.getElementById("textoOferta").innerText = descripcion;
 
-  alert("Oferta publicada");
+  // Crear link Google Maps
+  const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
+  document.getElementById("btnIr").href = url;
+
+  alert("Comercio creado y oferta publicada");
 
   volverFeed();
-    }
+}
   </script>
 
 </body>
