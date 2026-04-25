@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OfferFind MVP</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+    }
+
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: bold;
+      z-index: 10;
+    }
+
+    #app {
+      display: none;
+      height: 100vh;
+      overflow-y: scroll;
+      background: black;
+    }
+
+    .offer {
+      height: 100vh;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      box-sizing: border-box;
+    }
+
+    .offer h2 {
+      font-size: 34px;
+      margin-bottom: 20px;
+    }
+
+    .offer p {
+      font-size: 24px;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      background: #00c8ff;
+      padding: 16px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      font-size: 22px;
+      display: block;
+      text-align: center;
+    }
+
+    .comerciante-btn {
+      margin-top: 25px;
+      background: none;
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    #comercio, #panelComercio {
+      display: none;
+      min-height: 100vh;
+      padding: 30px;
+      box-sizing: border-box;
+      background: black;
+      color: white;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 12px;
+      border: none;
+      font-size: 18px;
+      box-sizing: border-box;
+    }
+
+    .admin-btn, .volver-btn {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      padding: 16px;
+      border-radius: 25px;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .admin-btn {
+      background: #00c8ff;
+      color: black;
+    }
+
+    .volver-btn {
+      background: #222;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="splash">
+    OfferFind
+  </div>
+
+  <div id="app">
+    <div class="offer"> style="position:relative;">
+<div id="infoOferta" style="
+  position:absolute;
+  bottom:95px;
+  left:20px;
+  right:20px;
+  color:white;
+  z-index:10;
+  text-shadow:0 2px 10px rgba(0,0,0,0.9);
+">
+  <h2 id="tituloOferta" style="
+    margin:0;
+    font-size:36px;
+    font-weight:900;
+    line-height:1.1;
+  ">Bar</h2>
+
+  <p id="textoOferta" style="
+    margin:8px 0 0 0;
+    font-size:26px;
+    font-weight:600;
+    color:#B4FF00;
+    line-height:1.2;
+  ">Oferta</p>
+</div>
+<video id="mediaOferta" autoplay muted loop playsinline style="width:100%;"></video>
+      <button id="btnSonido"
+        <button id="btnComerciante"
+onclick="irComercio()"
+style="
+position:absolute;
+top:20px;
+right:70px;
+z-index:99999;
+background:rgba(0,0,0,0.6);
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:20px;
+font-size:14px;
+">
+Soy comerciante
+      <button id="btnComerciante"
+onclick="event.stopPropagation(); irComercio()"
+style="position:absolute; top:20px; right:70px; z-index:99999; background:rgba(0,0,0,0.6); color:white; border:none; padding:8px 12px; border-radius:20px; font-size:14px;">
+Soy comerciante
+</button>
+
+<button id="btnSonido"
+onclick="event.stopPropagation(); toggleSonido()"
+style="position:absolute; top:20px; right:20px; z-index:99999; background:black; color:white; border:none; padding:10px; border-radius:50%;">
+🔇
+</button>
+      
+<img id="imgOferta" style="width:100%; display:none;" />
+      
+<a id="btnIr" href="https://www.google.com/maps" target="_blank"
+style="
+display:block;
+text-align:center;
+background:#B4FF00;
+color:black;
+font-weight:bold;
+font-size:20px;
+padding:16px;
+border-radius:30px;
+margin:20px;
+text-decoration:none;
+box-shadow:0 4px 15px rgba(0,0,0,0.3);
+">
+IR | GO →
+</a>
+   
+    </div>
+  </div>
+
+  <div id="comercio">
+    <h2>Zona Comercio</h2>
+    <p>Introduce tu PIN para gestionar tu oferta.</p>
+
+    <input id="pinComercio" placeholder="PIN del comercio">
+
+    <button class="admin-btn" onclick="entrarComercio()">
+      Entrar como comercio
+    </button>
+
+    <button class="admin-btn" onclick="entrarAdmin()">
+      Acceso administrador
+    </button>
+
+    <button class="volver-btn" onclick="volverFeed()">
+      Volver al feed
+    </button>
+  </div>
+
+  <div id="panelComercio">
+    <h2>Mi comercio</h2>
+
+    <input id="nombreLocal" placeholder="Nombre del local">
+    <input id="direccionLocal" placeholder="Dirección">
+    <input id="descripcionOferta" placeholder="Oferta">
+<input type="file" id="videoInput" accept="video/*,image/*">
+    <button class="admin-btn" onclick="publicarOferta()">
+      Publicar oferta
+    </button>
+
+    <button class="volver-btn" onclick="volverFeed()">
+      Volver al feed
+    </button>
+  </div>
+
+  <script>
+    document.addEventListener("click", () => {
+  const video = document.getElementById("mediaOferta");
+  if (video) {
+    video.muted = false;
+  }
+});
+    setTimeout(() => {
+      document.getElementById("splash").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    }, 1000);
+
+    cargarOfertaGuardada();
+
+    function cargarOfertaGuardada() {
+      const pinGuardado = localStorage.getItem("pinComercio");
+
+      if (!pinGuardado) return;
+
+      const comercioGuardado = localStorage.getItem("comercio_" + pinGuardado);
+
+      if (!comercioGuardado) return;
+
+      const datos = JSON.parse(comercioGuardado);
+
+      document.getElementById("tituloOferta").innerText = datos.nombre;
+      document.getElementById("textoOferta").innerText = datos.oferta;
+if (datos.video) {
+  const urlMedia = "https://shy-wave-7641.miguel190577ruiz.workers.dev/" + datos.video;
+
+  if (datos.video.includes(".mp4") || datos.video.includes(".webm")) {
+    const video = document.getElementById("mediaOferta");
+    video.src = urlMedia;
+    video.style.display = "block";
+
+    document.getElementById("imgOferta").style.display = "none";
+  } else {
+    const img = document.getElementById("imgOferta");
+    img.src = urlMedia;
+    img.style.display = "block";
+
+    document.getElementById("mediaOferta").style.display = "none";
+  }
+}
+      const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(datos.direccion);
+      document.getElementById("btnIr").href = url;
+    }
+
+    function irComercio() {
+      document.getElementById("app").style.display = "none";
+      document.getElementById("comercio").style.display = "block";
+      document.getElementById("panelComercio").style.display = "none";
+    }
+
+    function entrarComercio() {
+      const pin = document.getElementById("pinComercio").value;
+
+      if (!pin) {
+        alert("Introduce tu PIN");
+        return;
+      }
+
+      localStorage.setItem("pinComercio", pin);
+
+      const comercioGuardado = localStorage.getItem("comercio_" + pin);
+
+      if (comercioGuardado) {
+        const datos = JSON.parse(comercioGuardado);
+        document.getElementById("nombreLocal").value = datos.nombre;
+        document.getElementById("direccionLocal").value = datos.direccion;
+        document.getElementById("descripcionOferta").value = datos.oferta;
+      } else {
+        document.getElementById("nombreLocal").value = "";
+        document.getElementById("direccionLocal").value = "";
+        document.getElementById("descripcionOferta").value = "";
+      }
+
+      document.getElementById("comercio").style.display = "none";
+      document.getElementById("panelComercio").style.display = "block";
+    }
+
+    function volverFeed() {
+      document.getElementById("comercio").style.display = "none";
+      document.getElementById("panelComercio").style.display = "none";
+      document.getElementById("app").style.display = "block";
+      cargarOfertaGuardada();
+    }
+
+    function entrarAdmin() {
+      const pin = prompt("Introduce PIN administrador");
+
+      if (pin === "1234") {
+        alert("Acceso administrador concedido");
+      } else {
+        alert("PIN incorrecto");
+      }
+    }
+
+async function publicarOferta() {
+  const pin = localStorage.getItem("pinComercio");
+
+  if (!pin) {
+    alert("Primero entra con un PIN de comercio");
+    return;
+  }
+
+  const nombre = document.getElementById("nombreLocal").value;
+  const direccion = document.getElementById("direccionLocal").value;
+  const descripcion = document.getElementById("descripcionOferta").value;
+  const archivo = document.getElementById("videoInput").files[0];
+
+  if (!nombre || !direccion || !descripcion) {
+    alert("Rellena todos los campos");
+    return;
+  }
+
+  let archivoUrl = "";
+
+  if (archivo) {
+    try {
+      const nombreArchivo = Date.now() + "-" + archivo.name;
+
+      const response = await fetch(
+        "https://shy-wave-7641.miguel190577ruiz.workers.dev/" + encodeURIComponent(nombreArchivo),
+        {
+          method: "PUT",
+          body: archivo
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Cloudflare respondió con error");
+      }
+
+      const data = await response.json();
+      archivoUrl = data.fileName;
+
+    } catch (error) {
+      console.error("Error subiendo archivo:", error);
+      alert("Error al subir el vídeo o foto");
+      return;
+    }
+  }
+
+  const comercio = {
+    nombre: nombre,
+    direccion: direccion,
+    oferta: descripcion,
+    video: archivoUrl
+  };
+
+  localStorage.setItem("comercio_" + pin, JSON.stringify(comercio));
+
+  document.getElementById("tituloOferta").innerText = nombre;
+  document.getElementById("textoOferta").innerText = descripcion;
+
+  const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
+  document.getElementById("btnIr").href = url;
+
+  alert("Comercio creado y oferta publicada");
+
+  volverFeed();
+}
+    function toggleSonido() {
+  const video = document.getElementById("mediaOferta");
+  const btn = document.getElementById("btnSonido");
+
+  if (!video) return;
+
+  if (video.muted) {
+    video.muted = false;
+    video.volume = 1;
+    video.play();
+    btn.innerText = "🔊";
+  } else {
+    video.muted = true;
+    btn.innerText = "🔇";
+  }
+}
+
+document.getElementById("mediaOferta").addEventListener("click", toggleSonido);
+  </script>
+
+</body>
+</html>>
