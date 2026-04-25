@@ -20,7 +20,14 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
 <body>
 
 <button id="btnComerciante" onclick="irComercio()">Soy comerciante</button>
-
+<script>
+function irComercio() {
+  document.getElementById("app").style.display = "none";
+  document.getElementById("comercio").style.display = "block";
+  document.getElementById("panelComercio").style.display = "none";
+  document.getElementById("panelAdmin").style.display = "none";
+}
+</script>
 <div id="app">
   <h1>OfferFind</h1>
   <p>Feed de ofertas</p>
