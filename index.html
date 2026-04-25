@@ -180,15 +180,16 @@ if (!subida.ok) {
       .delete()
       .eq("commercespin", pinActual);
 
-    const { error } = await db
-      .from("offers")
-      .insert([{
-        title: nombre,
-        description: oferta,
-        address: direccion,
-        media_url: mediaUrl,
-        commercespin: pinActual
-      }]);
+    const { error } = await supabase
+  .from("offers")
+  .insert([{
+    title: nombre,
+    description: oferta,
+    price: "",
+    address: direccion,
+    "media-url": mediaUrl,
+    "commerce-pin": pinActual
+  }]);
 
     if (error) {
       console.error(error);
