@@ -1,1 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfferFind MVP</title>
 
+<style>
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:black;
+  color:white;
+}
+
+#splash {
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  font-weight:bold;
+  z-index:99999;
+}
+
+#app {
+  display:none;
+  height:100vh;
+  overflow-y:scroll;
+  scroll-snap-type:y mandatory;
+  background:black;
+}
+
+.offer {
+  height:100vh;
+  position:relative;
+  scroll-snap-align:start;
+  overflow:hidden;
+  background:black;
+}
+
+.offer video,
+.offer img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.infoOferta {
+  position:absolute;
+  bottom:150px;
+  left:20px;
+  right:20px;
+  z-index:10;
+  text-shadow:0 2px 10px rgba(0,0,0,0.9);
+}
+
+.infoOferta h2 {
+  margin:0;
+  font-size:36px;
+  font-weight:900;
+  line-height:1.1;
+}
+
+.infoOferta p {
+  margin:8px 0 0 0;
+  font-size:26px;
+  font-weight:700;
+  color:#B4FF00;
+}
+
+.btnIr {
+  position:absolute;
+  bottom:40px;
+  left:20px;
+  right:20px;
+  display:block;
+  text-align:center;
+  background:#B4FF00;
+  color:black;
+  font-weight:900;
+  font-size:22px;
+  padding:16px;
+  border-radius:35px;
+  text-decoration:none;
+  z-index:20;
+}
+
+.top-btn {
+  position:fixed;
+  top:20px;
+  z-index:9999;
+  background:rgba(0,0,0,0.65);
+  color:white;
+  border:none;
+  padding:9px 13px;
+  border-radius:22px;
+  font-size:14px;
+}
+
+#btnComerciante { right:70px; }
+#btnSonido { right:20px; border-radius:50%; }
+
+#comercio,
+#panelComercio {
+  display:none;
+  min-height:100vh;
+  padding:30px;
+  box-sizing:border-box;
+  background:black;
+  color:white;
+}
+
+input {
+  width:100%;
+  padding:15px;
+  margin:12px 0;
+  border-radius:12px;
+  border:none;
+  font-size:18px;
+  box-sizing:border-box;
+}
+
+.admin-btn,
+.volver-btn {
+  display:block;
+  width:100%;
+  margin-top:15px;
+  padding:16px;
+  border-radius:25px;
+  border:none;
+  font-size:18px;
+  font-weight:bold;
+}
+
+.admin-btn {
+  background:#B4FF00;
+  color:black;
+}
+
+.volver-btn {
+  background:#222;
+  color:white;
+}
+
+.empty {
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:30px;
+  box-sizing:border-box;
+}
+</style>
+</head>
+
+<body>
+
+<div id="splash">OfferFind</div>
+
+<button id="btnComerciante" class="top-btn" onclick="irComercio()">Soy comerciante</button>
+<button id="btnSonido" class="top-btn" onclick="toggleSonido()">🔇</button>
+
+<div id="app"></div>
+
+<div id="comercio">
+  <h2>Zona Comercio</h2>
+  <p>Introduce tu PIN para publicar tu oferta.</p>
+
+  <input id="pinComercio" placeholder="PIN del comercio">
+
+  <button class="admin-btn" onclick="entrarComercio()">Entrar como comercio</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelComercio">
+  <h2>Mi comercio</h2>
+
+  <input id="nombreLocal" placeholder="Nombre del local">
+  <input id="direccionLocal" placeholder="Dirección">
+  <input id="descripcionOferta" placeholder="Oferta y precio. Ej: Café + bollo 2,50€">
+  <input type="file" id="videoInput" accept="video/*,image/*">
+
+  <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+setTimeout(() => {
+  document.getElementById("splash").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}, 1000);
+
+const SUPABASE_URL = "https://mmfuhvlxjzvfotonjycw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wy2qvGG23Ozj-unBH8YqKQ_ZyC7ArIu";
+const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let sonidoActivo = false;
+
+async function cargarOfertas() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  const { data, error } = await supabase
+    .from("offers")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    app.innerHTML = '<div class="empty">Error cargando ofertas</div>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    app.innerHTML = '<div class="empty">Todavía no hay ofertas publicadas</div>';
+    return;
+  }
+
+  data.forEach(oferta => {
+    const mediaUrl = oferta.media_url || "";
+    const esVideo = mediaUrl.includes(".mp4") || mediaUrl.includes(".webm") || mediaUrl.includes(".mov");
+
+    const div = document.createElement("div");
+    div.className = "offer";
+
+    div.innerHTML = `
+      ${
+        esVideo
+        ? `<video class="media-video" src="${mediaUrl}" autoplay muted loop playsinline></video>`
+        : `<img src="${mediaUrl}" alt="Oferta">`
+      }
+
+      <div class="infoOferta">
+        <h2>${oferta.title || ""}</h2>
+        <p>${oferta.description || ""}</p>
+      </div>
+
+      <a class="btnIr"
+         href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(oferta.title || "")}"
+         target="_blank">
+        IR | GO →
+      </a>
+    `;
+
+    app.appendChild(div);
+  });
+
+  aplicarSonido();
+}
+
+function aplicarSonido() {
+  document.querySelectorAll(".media-video").forEach(video => {
+    video.muted = !sonidoActivo;
+    if (sonidoActivo) {
+      video.volume = 1;
+      video.play();
+    }
+  });
+
+  document.getElementById("btnSonido").innerText = sonidoActivo ? "🔊" : "🔇";
+}
+
+function toggleSonido() {
+  sonidoActivo = !sonidoActivo;
+  aplicarSonido();
+}
+
+function irComercio() {
+  document.getElementById("app").style.display = "none";
+  document.getElementById("comercio").style.display = "block";
+  document.getElementById("panelComercio").style.display = "none";
+}
+
+function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value.trim();
+
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "block";
+}
+
+function volverFeed() {
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  cargarOfertas();
+}
+
+async function publicarOferta() {
+  const nombre = document.getElementById("nombreLocal").value.trim();
+  const direccion = document.getElementById("direccionLocal").value.trim();
+  const descripcion = document.getElementById("descripcionOferta").value.trim();
+  const archivo = document.getElementById("videoInput").files[0];
+
+  if (!nombre || !direccion || !descripcion || !archivo) {
+    alert("Rellena todos los campos y sube una foto o vídeo");
+    return;
+  }
+
+  try {
+    const nombreArchivo = Date.now() + "-" + archivo.name;
+
+    const res = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+    if (!res.ok) {
+      throw new Error("Error subiendo archivo");
+    }
+
+    const mediaUrl = WORKER_URL + nombreArchivo;
+
+    const { error } = await supabase.from("offers").insert([
+      {
+        title: nombre,
+        description: descripcion,
+        price: "",
+        media_url: mediaUrl
+      }
+    ]);
+
+    if (error) {
+      console.error(error);
+      alert("Error guardando oferta en Supabase");
+      return;
+    }
+
+    alert("Oferta publicada correctamente");
+
+    document.getElementById("nombreLocal").value = "";
+    document.getElementById("direccionLocal").value = "";
+    document.getElementById("descripcionOferta").value = "";
+    document.getElementById("videoInput").value = "";
+
+    volverFeed();
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al publicar la oferta");
+  }
+}
+
+cargarOfertas();
+</script>
+
+</body>
+</html>
