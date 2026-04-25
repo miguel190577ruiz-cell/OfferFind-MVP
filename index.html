@@ -14,15 +14,25 @@ body {
 }
 
 #splash {
-  position:fixed;
-  inset:0;
-  background:black;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:42px;
-  font-weight:bold;
-  z-index:99999;
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: bold;
+  z-index: 99999;
+  animation: quitarSplash 1s forwards;
+  animation-delay: 1s;
+}
+
+@keyframes quitarSplash {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 #app {
