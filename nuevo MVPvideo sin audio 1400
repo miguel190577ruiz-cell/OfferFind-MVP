@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfferFind MVP</title>
+<style>
+body { margin:0; background:black; color:white; font-family:Arial,sans-serif; }
+#app { min-height:100vh; padding:30px; box-sizing:border-box; }
+#comercio, #panelComercio { display:none; min-height:100vh; padding:30px; box-sizing:border-box; }
+button { padding:14px 18px; border:none; border-radius:24px; font-weight:bold; }
+#btnComerciante { position:fixed; top:20px; right:20px; z-index:99999; background:#111; color:white; }
+.admin-btn { width:100%; margin-top:15px; background:#B4FF00; color:black; }
+.volver-btn { width:100%; margin-top:15px; background:#222; color:white; }
+input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none; font-size:18px; box-sizing:border-box; }
+</style>
+</head>
+<body>
+
+<button id="btnComerciante" onclick="irComercio()">Soy comerciante</button>
+
+<div id="app">
+  <h1>OfferFind</h1>
+  <p>Feed de ofertas</p>
+</div>
+
+<div id="comercio">
+  <h2>Zona Comercio</h2>
+  <input id="pinComercio" placeholder="PIN del comercio">
+  <button class="admin-btn" onclick="entrarComercio()">Entrar como comercio</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelComercio">
+  <h2>Mi comercio</h2>
+  <input id="nombreLocal" placeholder="Nombre del local">
+  <input id="direccionLocal" placeholder="Dirección">
+  <input id="descripcionOferta" placeholder="Oferta y precio">
+  <input type="file" id="videoInput" accept="video/*,image/*">
+  <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<script>
+function irComercio() {
+  document.getElementById("app").style.display = "none";
+  document.getElementById("comercio").style.display = "block";
+  document.getElementById("panelComercio").style.display = "none";
+}
+
+function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value.trim();
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "block";
+}
+
+function volverFeed() {
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+function publicarOferta() {
+  const nombre = document.getElementById("nombreLocal").value;
+  const direccion = document.getElementById("direccionLocal").value;
+  const oferta = document.getElementById("descripcionOferta").value;
+  const archivo = document.getElementById("videoInput").files[0];
+
+  if (!nombre || !direccion || !oferta) {
+    alert("Rellena todo");
+    return;
+  }
+
+  let mediaUrl = "";
+
+  if (archivo) {
+    mediaUrl = URL.createObjectURL(archivo);
+  }
+
+  // 🔥 Crear oferta en pantalla (feed)
+  const app = document.getElementById("app");
+
+  const div = document.createElement("div");
+  div.style = "padding:20px;";
+
+  const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
+
+  div.innerHTML = `
+    <video src="${mediaUrl}" autoplay muted loop playsinline 
+style="width:100%; height:60vh; object-fit:cover; border-radius:20px;"></video>
+
+    <h2>${nombre}</h2>
+
+    <p style="color:#B4FF00; font-size:22px;">
+      ${oferta}
+    </p>
+
+    <a href="${mapsUrl}" target="_blank"
+      style="
+        display:block;
+        text-align:center;
+        background:#B4FF00;
+        color:black;
+        padding:16px;
+        border-radius:30px;
+        margin-top:20px;
+        font-weight:bold;
+        text-decoration:none;
+      ">
+      IR | GO →
+    </a>
+  `;
+
+  app.innerHTML = "";
+  app.appendChild(div);
+
+  alert("Oferta publicada");
+
+  volverFeed();
+}
+</script>
+
+</body>
+</html>
