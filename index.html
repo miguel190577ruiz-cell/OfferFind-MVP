@@ -91,7 +91,8 @@ function publicarOferta() {
   const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
 
   div.innerHTML = `
-    <img src="${mediaUrl}" style="width:100%; border-radius:20px;" />
+    <video src="${mediaUrl}" autoplay muted loop playsinline 
+style="width:100%; height:60vh; object-fit:cover; border-radius:20px;"></video>
 
     <h2>${nombre}</h2>
 
