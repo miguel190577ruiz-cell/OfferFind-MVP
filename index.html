@@ -203,15 +203,14 @@ button {
 const SUPABASE_URL = "https://mmfuhvlxjzvfotonjycw.supabase.co";
 const SUPABASE_KEY = "sb_publishable_wy2qvGG23Ozj-unBH8YqKQ_ZyC7ArIu";
 const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-let sonidoActivo = false;
-
 setTimeout(() => {
   document.getElementById("splash").style.display = "none";
   document.getElementById("app").style.display = "block";
 }, 1000);
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let sonidoActivo = false;
 
 async function cargarOfertas() {
   const { data, error } = await supabase
