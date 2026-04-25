@@ -65,9 +65,62 @@ function volverFeed() {
   document.getElementById("panelComercio").style.display = "none";
   document.getElementById("app").style.display = "block";
 }
-
 function publicarOferta() {
-  alert("Botón publicar funciona");
+  const nombre = document.getElementById("nombreLocal").value;
+  const direccion = document.getElementById("direccionLocal").value;
+  const oferta = document.getElementById("descripcionOferta").value;
+  const archivo = document.getElementById("videoInput").files[0];
+
+  if (!nombre || !direccion || !oferta) {
+    alert("Rellena todo");
+    return;
+  }
+
+  let mediaUrl = "";
+
+  if (archivo) {
+    mediaUrl = URL.createObjectURL(archivo);
+  }
+
+  // 🔥 Crear oferta en pantalla (feed)
+  const app = document.getElementById("app");
+
+  const div = document.createElement("div");
+  div.style = "padding:20px;";
+
+  const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(direccion);
+
+  div.innerHTML = `
+    <img src="${mediaUrl}" style="width:100%; border-radius:20px;" />
+
+    <h2>${nombre}</h2>
+
+    <p style="color:#B4FF00; font-size:22px;">
+      ${oferta}
+    </p>
+
+    <a href="${mapsUrl}" target="_blank"
+      style="
+        display:block;
+        text-align:center;
+        background:#B4FF00;
+        color:black;
+        padding:16px;
+        border-radius:30px;
+        margin-top:20px;
+        font-weight:bold;
+        text-decoration:none;
+      ">
+      IR | GO →
+    </a>
+  `;
+
+  app.innerHTML = "";
+  app.appendChild(div);
+
+  alert("Oferta publicada");
+
+  volverFeed();
 }
 </script>
 
