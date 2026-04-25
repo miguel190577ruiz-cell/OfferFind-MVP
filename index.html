@@ -422,6 +422,54 @@ async function publicarOferta() {
 
 document.getElementById("mediaOferta").addEventListener("click", toggleSonido);
   </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const supabaseUrl = "https://mmfuhvlxjzvfotonjycw.supabase.co";
+const supabaseKey = "PEGA_AQUI_TU_KEY";
+
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// Cargar ofertas
+async function cargarOfertas() {
+  const { data, error } = await supabase
+    .from('offers')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  console.log("OFERTAS:", data);
+
+  if (data.length > 0) {
+    mostrarOferta(data[0]); // de momento mostramos una
+  }
+}
+
+// Mostrar oferta en pantalla
+function mostrarOferta(oferta) {
+  document.getElementById("tituloOferta").innerText = oferta.title;
+  document.getElementById("textoOferta").innerText = oferta.description + " " + oferta.price;
+
+  const video = document.getElementById("mediaOferta");
+  const img = document.getElementById("imgOferta");
+
+  if (oferta.media_url && oferta.media_url.includes(".mp4")) {
+    video.src = oferta.media_url;
+    video.style.display = "block";
+    img.style.display = "none";
+  } else {
+    img.src = oferta.media_url;
+    img.style.display = "block";
+    video.style.display = "none";
+  }
+}
+
+// lanzar carga
+cargarOfertas();
+</script>
 </body>
 </html>>
