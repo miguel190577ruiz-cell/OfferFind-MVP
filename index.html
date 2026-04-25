@@ -42,7 +42,20 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
   <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
 </div>
+<div id="panelAdmin" style="display:none;">
+  <h2>Administrador</h2>
 
+  <input id="nuevoPin" placeholder="PIN del comercio">
+  <input id="nuevoNombre" placeholder="Nombre del comercio">
+
+  <button class="admin-btn" onclick="crearComercio()">
+    Crear comercio
+  </button>
+
+  <button class="volver-btn" onclick="volverFeed()">
+    Volver
+  </button>
+</div>
 <script>
 function irComercio() {
   document.getElementById("app").style.display = "none";
