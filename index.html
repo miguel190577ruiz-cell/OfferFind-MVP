@@ -168,10 +168,10 @@ async function publicarOferta() {
       body: archivo
     });
 
-    if (!subida.ok) {
-      alert("Error subiendo vídeo/foto");
-      return;
-    }
+if (!subida.ok) {
+  alert("Error subiendo vídeo/foto. Código: " + subida.status);
+  return;
+}
 
     const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
 
