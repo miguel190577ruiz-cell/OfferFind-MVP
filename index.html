@@ -69,7 +69,18 @@ function entrarComercio() {
     alert("Introduce tu PIN");
     return;
   }
+function entrarAdmin() {
+  const pin = prompt("PIN administrador");
 
+  if (pin === "1234") {
+    document.getElementById("app").style.display = "none";
+    document.getElementById("comercio").style.display = "none";
+    document.getElementById("panelComercio").style.display = "none";
+    document.getElementById("panelAdmin").style.display = "block";
+  } else {
+    alert("PIN incorrecto");
+  }
+}
   document.getElementById("comercio").style.display = "none";
   document.getElementById("panelComercio").style.display = "block";
 }
