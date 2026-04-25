@@ -178,7 +178,7 @@ if (!subida.ok) {
     await db
       .from("offers")
       .delete()
-      .eq("commercespin", pinActual);
+      .eq("commerce-pin", pinActual);
 
     const { error } = await supabase
   .from("offers")
