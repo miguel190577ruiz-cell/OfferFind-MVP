@@ -104,6 +104,7 @@ function toggleSonido() {
     video.muted = !sonidoActivo;
     video.play().catch(() => {});
   });
+  controlarVideosVisibles();
 } 
 function mostrar(id) {
   document.getElementById("app").style.display = "none";
