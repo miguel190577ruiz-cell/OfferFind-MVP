@@ -167,7 +167,7 @@ const direccion = document.getElementById("nuevaDireccion").value.trim();
 
   const { error } = await db
     .from("commerces")
-    .insert([{ pin: pin, nombre: nombre }]);
+    .insert([{ pin: pin, nombre: nombre, address: direccion }]);
 
   if (error) {
     console.error(error);
