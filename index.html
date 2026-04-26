@@ -329,7 +329,13 @@ if (!media) return;
       }
 
       <h2>${oferta.title || ""}</h2>
-      <p class="offer-text">${oferta.description || ""}</p>
+
+${oferta.type === "express" && oferta.expires_at
+  ? `<p class="offer-text">⚡ EXPRESS · Quedan ${Math.max(0, Math.ceil((new Date(oferta.expires_at) - new Date()) / 60000))} min</p>`
+  : ""
+}
+
+<p class="offer-text">${oferta.description || ""}</p>
 
       <a class="go-btn" href="${mapsUrl}" target="_blank">
         IR | GO →
