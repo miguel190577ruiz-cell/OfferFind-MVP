@@ -155,7 +155,10 @@ async function publicarOferta() {
   const direccion = document.getElementById("direccionLocal").value.trim();
   const oferta = document.getElementById("descripcionOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
-
+nombreActual = nombre;
+direccionActual = direccion;
+ofertaActual = oferta;
+archivoActual = archivo;
   if (!pinActual) {
     alert("Primero entra con un PIN de comercio válido");
     return;
