@@ -263,6 +263,27 @@ if (!subida.ok) {
   alert("Error técnico: " + e.message);
   }
 }
+  async function borrarOferta() {
+  if (!pinActual) {
+    alert("No hay comercio activo");
+    return;
+  }
+
+  if (!confirm("¿Seguro que quieres borrar tu oferta?")) return;
+
+  const { error } = await db
+    .from("offers")
+    .delete()
+    .eq("commerce-pin", pinActual);
+
+  if (error) {
+    alert("Error borrando oferta");
+    return;
+  }
+
+  alert("Oferta eliminada");
+  volverFeed();
+  }
 async function publicarExpress() {
   const minutos = prompt(
     "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
