@@ -377,7 +377,7 @@ if (!media) return;
       <h2>${oferta.title || ""}</h2>
 
 ${oferta.type === "express" && oferta.expires_at
-  ? `<p class="offer-text" id="timer-${oferta.id}">⚡ EXPRESS</p>`
+  ? `<p class="offer-text express-text" id="timer-${oferta.id}">⚡ EXPRESS</p>`
   : ""
 }
 <p class="offer-text">${oferta.description || ""}</p>
