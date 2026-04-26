@@ -312,6 +312,10 @@ async function cargarOfertas() {
   app.innerHTML = "";
 
   data.forEach(oferta => {
+    if (oferta.type === "express" && oferta.expires_at) {
+  const caducada = new Date(oferta.expires_at) <= new Date();
+  if (caducada) return;
+    }
     const media = oferta["media-url"];
 
 if (!media) return;
