@@ -465,6 +465,11 @@ window.addEventListener("touchend", (e) => {
     }
   });
   }
+  window.addEventListener("scroll", controlarVideosVisibles);
+
+window.addEventListener("touchend", () => {
+  setTimeout(controlarVideosVisibles, 300);
+});
 </script>
 
 </body>
