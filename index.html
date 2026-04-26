@@ -233,10 +233,10 @@ async function publicarExpress() {
 
   try {
     // 🔹 datos del formulario (igual que publicar normal)
-const nombre = nombreActual;
-const direccion = direccionActual;
-const oferta = ofertaActual;
-const archivo = archivoActual;
+const nombre = document.getElementById("nombreLocal").value.trim();
+const direccion = document.getElementById("direccionLocal").value.trim();
+const oferta = document.getElementById("descripcionOferta").value.trim();
+const archivo = document.getElementById("videoInput").files[0];
     if (!nombre || !direccion || !oferta || !archivo) {
       alert("Completa todos los campos");
       return;
