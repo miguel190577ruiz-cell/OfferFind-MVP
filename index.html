@@ -274,7 +274,25 @@ if (!subida.ok) {
   }
 
   if (!confirm("¿Borrar tu oferta normal?")) return;
+const { data } = await db
+  .from("offers")
+  .select("*")
+  .eq("commerce-pin", pinActual)
+  .eq("type", "normal");
 
+if (data && data.length > 0) {
+  for (const oferta of data) {
+    const media = oferta["media-url"];
+
+    if (media) {
+      const nombreArchivo = media.split("/").pop();
+
+      await fetch(WORKER_URL + nombreArchivo, {
+        method: "DELETE"
+      });
+    }
+  }
+}
   const { error } = await db
     .from("offers")
     .delete()
