@@ -263,10 +263,10 @@ const archivo = archivoActual;
     const { error } = await db
       .from("offers")
       .insert([{
-        title: nombre,
-        description: oferta,
+        title: nombreActual,
+        description: ofertaActual,
         price: "",
-        address: direccion,
+        address: direccionActual,
         media_url: mediaUrl,
         "commerce-pin": pinActual,
         type: "express",
