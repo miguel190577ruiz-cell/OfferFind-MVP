@@ -201,8 +201,8 @@ if (!subida.ok) {
     volverFeed();
 
   } catch (e) {
-    console.error(e);
-    alert("Error al publicar");
+  console.error(e);
+  alert("Error técnico: " + e.message);
   }
 }
 
