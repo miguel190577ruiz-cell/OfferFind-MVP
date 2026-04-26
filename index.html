@@ -381,6 +381,42 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
 
 cargarOfertas();
+  let bloqueando = false;
+
+window.addEventListener("wheel", (e) => {
+  if (bloqueando) return;
+
+  const cards = document.querySelectorAll(".offer-card");
+  if (cards.length === 0) return;
+
+  const scrollActual = window.scrollY;
+  let indexActual = 0;
+
+  cards.forEach((card, i) => {
+    if (card.offsetTop <= scrollActual + 10) {
+      indexActual = i;
+    }
+  });
+
+  let siguienteIndex = indexActual;
+
+  if (e.deltaY > 0) {
+    siguienteIndex = Math.min(indexActual + 1, cards.length - 1);
+  } else {
+    siguienteIndex = Math.max(indexActual - 1, 0);
+  }
+
+  bloqueando = true;
+
+  window.scrollTo({
+    top: cards[siguienteIndex].offsetTop,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
+    bloqueando = false;
+  }, 600);
+});
 </script>
 
 </body>
