@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfferFind MVP</title>
+
+<style>
+body { margin:0; background:black; color:white; font-family:Arial,sans-serif; }
+#app { min-height:100vh; padding:30px; box-sizing:border-box; }
+#comercio, #panelComercio, #panelAdmin { display:none; min-height:100vh; padding:30px; box-sizing:border-box; }
+button { padding:14px 18px; border:none; border-radius:24px; font-weight:bold; }
+#btnComerciante { position:fixed; top:20px; right:20px; z-index:99999; background:#111; color:white; }
+  #btnSonido {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 99999;
+  background: #111;
+  color: white;
+  font-size: 22px;
+  }
+.admin-btn { width:100%; margin-top:15px; background:#B4FF00; color:black; }
+.volver-btn { width:100%; margin-top:15px; background:#222; color:white; }
+input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none; font-size:18px; box-sizing:border-box; }
+.offer-card video, .offer-card img { width:100%; height:60vh; object-fit:cover; border-radius:20px; background:#111; }
+.go-btn { display:block; text-align:center; background:#B4FF00; color:black; padding:16px; border-radius:30px; margin-top:20px; font-weight:bold; text-decoration:none; font-size:22px; }
+.offer-text { color:#B4FF00; font-size:24px; font-weight:bold; }
+  html {
+  scroll-snap-type: y mandatory;
+}
+
+.offer-card {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  padding-top: 30px;
+  box-sizing: border-box;
+}
+</style>
+</head>
+
+<body>
+
+<button id="btnComerciante" onclick="irComercio()">Soy comerciante</button>
+<button id="btnSonido" onclick="toggleSonido()">🔇</button>
+<div id="app">
+  <h1>OfferFind</h1>
+  <p>Feed de ofertas</p>
+</div>
+
+<div id="comercio">
+  <h2>Zona Comercio</h2>
+  <input id="pinComercio" placeholder="PIN del comercio">
+  <button class="admin-btn" onclick="entrarComercio()">Entrar como comercio</button>
+  <button class="admin-btn" onclick="entrarAdmin()">Soy administrador</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelComercio">
+  <h2>Mi comercio</h2>
+  <input id="nombreLocal" placeholder="Nombre del local">
+  <input id="direccionLocal" placeholder="Dirección">
+  <input id="descripcionOferta" placeholder="Oferta y precio">
+  <input type="file" id="videoInput" accept="video/*,image/*">
+  <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
+  <button onclick="publicarExpress()" class="admin-btn">
+  ⚡ Publicar oferta express
+  </button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelAdmin">
+  <h2>Administrador</h2>
+  <input id="nuevoPin" placeholder="PIN del comercio">
+  <input id="nuevoNombre" placeholder="Nombre del comercio">
+  <button class="admin-btn" onclick="crearComercio()">Crear comercio</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://mmfuhvlxjzvfotonjycw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wy2qvGG23Ozj-unBH8YqKQ_ZyC7ArIu";
+const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let pinActual = "";
+
+let nombreActual = "";
+let direccionActual = "";
+let ofertaActual = "";
+let archivoActual = null;
+ let sonidoActivo = false;
+
+function toggleSonido() {
+  sonidoActivo = !sonidoActivo;
+
+  document.getElementById("btnSonido").innerText = sonidoActivo ? "🔊" : "🔇";
+
+  document.querySelectorAll("video").forEach(video => {
+    video.muted = !sonidoActivo;
+    video.play().catch(() => {});
+  });
+} 
+function mostrar(id) {
+  document.getElementById("app").style.display = "none";
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "none";
+  document.getElementById("panelAdmin").style.display = "none";
+  document.getElementById(id).style.display = "block";
+}
+
+function irComercio() {
+  mostrar("comercio");
+}
+
+async function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value.trim();
+
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  const { data, error } = await db
+    .from("commerces")
+    .select("*")
+    .eq("pin", pin)
+    .maybeSingle();
+
+  if (error || !data) {
+    alert("PIN no válido");
+    return;
+  }
+
+  pinActual = pin;
+  document.getElementById("nombreLocal").value = data.nombre || "";
+  mostrar("panelComercio");
+}
+
+function entrarAdmin() {
+  const pin = prompt("PIN administrador");
+
+  if (pin !== "1234") {
+    alert("PIN incorrecto");
+    return;
+  }
+
+  mostrar("panelAdmin");
+}
+
+function volverFeed() {
+  mostrar("app");
+  cargarOfertas();
+}
+
+async function crearComercio() {
+  const pin = document.getElementById("nuevoPin").value.trim();
+  const nombre = document.getElementById("nuevoNombre").value.trim();
+
+  if (!pin || !nombre) {
+    alert("Rellena PIN y nombre");
+    return;
+  }
+
+  const { error } = await db
+    .from("commerces")
+    .insert([{ pin: pin, nombre: nombre }]);
+
+  if (error) {
+    console.error(error);
+    alert("Error creando comercio");
+    return;
+  }
+
+  alert("Comercio creado");
+
+  document.getElementById("nuevoPin").value = "";
+  document.getElementById("nuevoNombre").value = "";
+}
+
+async function publicarOferta() {
+  const nombre = document.getElementById("nombreLocal").value.trim();
+  const direccion = document.getElementById("direccionLocal").value.trim();
+  const oferta = document.getElementById("descripcionOferta").value.trim();
+  const archivo = document.getElementById("videoInput").files[0];
+nombreActual = nombre;
+direccionActual = direccion;
+ofertaActual = oferta;
+archivoActual = archivo;
+  if (!pinActual) {
+    alert("Primero entra con un PIN de comercio válido");
+    return;
+  }
+
+  if (!nombre || !direccion || !oferta || !archivo) {
+    alert("Rellena todo y sube un vídeo o foto");
+    return;
+  }
+
+  try {
+    const nombreArchivo = Date.now() + "-" + archivo.name;
+
+    const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+if (!subida.ok) {
+  alert("Error subiendo vídeo/foto. Código: " + subida.status);
+  return;
+}
+
+    const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
+
+    await db
+      .from("offers")
+     .delete()
+.eq("commerce-pin", pinActual)
+.eq("type", "normal");
+
+    const { error } = await db
+  .from("offers")
+  .insert([{
+    title: nombre,
+    description: oferta,
+    price: "",
+    address: direccion,
+    "media-url": mediaUrl,
+    "commerce-pin": pinActual,
+    type:"normal"
+  }]);
+
+   if (error) {
+  console.error(error);
+  alert("Supabase: " + error.message);
+  return;
+   }
+
+    alert("Oferta publicada");
+    volverFeed();
+
+  } catch (e) {
+  console.error(e);
+  alert("Error técnico: " + e.message);
+  }
+}
+async function publicarExpress() {
+  const minutos = prompt(
+    "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
+  );
+
+  if (!minutos) return;
+
+  const mins = Number(minutos);
+
+  if (![30, 60, 90, 120, 150, 180].includes(mins)) {
+    alert("Tiempo no válido");
+    return;
+  }
+
+  try {
+    // 🔹 datos del formulario (igual que publicar normal)
+const nombre = document.getElementById("nombreLocal").value.trim();
+const direccion = document.getElementById("direccionLocal").value.trim();
+const oferta = document.getElementById("descripcionOferta").value.trim();
+const archivo = document.getElementById("videoInput").files[0];
+    if (!nombre || !direccion || !oferta || !archivo) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    // 🔹 subir imagen (igual que ya haces)
+    const nombreArchivo = Date.now() + "_" + archivo.name;
+
+    const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+    if (!subida.ok) {
+      alert("Error subiendo archivo");
+      return;
+    }
+
+    const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
+
+    // 🔹 calcular expiración
+    const ahora = new Date();
+    const expires = new Date(ahora.getTime() + mins * 60000);
+
+    // 🔹 insertar en DB (NO borrar normal)
+    const { error } = await db
+      .from("offers")
+      .insert([{
+        title: nombre,
+        description: oferta,
+        price: "",
+        address: direccion,
+        "media-url": mediaUrl,
+        "commerce-pin": pinActual,
+        type: "express",
+        expires_at: expires.toISOString()
+      }]);
+
+    if (error) {
+      console.error(error);
+      alert("Error guardando express");
+      return;
+    }
+
+    alert("Oferta express publicada");
+    volverFeed();
+
+  } catch (e) {
+    console.error(e);
+    alert("Error técnico: " + e.message);
+  }
+}
+async function cargarOfertas() {
+  const app = document.getElementById("app");
+
+  const { data, error } = await db
+    .from("offers")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+  if (error) {
+    console.error(error);
+    app.innerHTML = "<h1>OfferFind</h1><p>Error cargando ofertas</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    app.innerHTML = "<h1>OfferFind</h1><p>Todavía no hay ofertas publicadas</p>";
+    return;
+  }
+
+  app.innerHTML = "";
+
+  data.forEach(oferta => {
+    if (oferta.type === "express" && oferta.expires_at) {
+  const caducada = new Date(oferta.expires_at) <= new Date();
+  if (caducada) return;
+    }
+    const media = oferta["media-url"];
+
+if (!media) return;
+    const esVideo = media.toLowerCase().includes(".mp4") || media.toLowerCase().includes(".mov") || media.toLowerCase().includes(".webm");
+
+    const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(oferta.address || oferta.title);
+
+    const div = document.createElement("div");
+    div.className = "offer-card";
+    div.style = "margin-bottom:40px;";
+
+    div.innerHTML = `
+      ${esVideo
+        ? `<video src="${media}" autoplay muted loop playsinline controls></video>`
+        : `<img src="${media}">`
+      }
+
+      <h2>${oferta.title || ""}</h2>
+
+${oferta.type === "express" && oferta.expires_at
+  ? `<p class="offer-text" id="timer-${oferta.id}">⚡ EXPRESS</p>`
+  : ""
+}
+<p class="offer-text">${oferta.description || ""}</p>
+
+      <a class="go-btn" href="${mapsUrl}" target="_blank">
+        IR | GO →
+      </a>
+    `;
+if (oferta.type === "express" && oferta.expires_at) {
+  const el = div.querySelector(`#timer-${oferta.id}`);
+
+  function actualizarTimer() {
+    const diff = new Date(oferta.expires_at) - new Date();
+
+    if (diff <= 0) {
+      el.innerText = "⛔ Expirada";
+      return;
+    }
+
+    const mins = Math.floor(diff / 60000);
+    const horas = Math.floor(mins / 60);
+    const minutos = mins % 60;
+
+    el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
+  }
+
+  actualizarTimer();
+  setInterval(actualizarTimer, 60000);
+}
+    app.appendChild(div);
+  });
+}
+
+cargarOfertas();
+ let startY = 0;
+let bloqueando = false;
+
+window.addEventListener("touchstart", (e) => {
+  startY = e.touches[0].clientY;
+});
+
+window.addEventListener("touchend", (e) => {
+  if (bloqueando) return;
+
+  const endY = e.changedTouches[0].clientY;
+  const delta = startY - endY;
+
+  // evitar toques pequeños
+  if (Math.abs(delta) < 50) return;
+
+  const cards = document.querySelectorAll(".offer-card");
+  if (cards.length === 0) return;
+
+  const scrollActual = window.scrollY;
+  let indexActual = 0;
+
+  cards.forEach((card, i) => {
+    if (card.offsetTop <= scrollActual + 10) {
+      indexActual = i;
+    }
+  });
+
+  let siguienteIndex = indexActual;
+
+  if (delta > 0) {
+    siguienteIndex = Math.min(indexActual + 1, cards.length - 1);
+  } else {
+    siguienteIndex = Math.max(indexActual - 1, 0);
+  }
+
+  bloqueando = true;
+
+  window.scrollTo({
+    top: cards[siguienteIndex].offsetTop,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
+    bloqueando = false;
+  }, 600);
+});
+</script>
+
+</body>
+</html>
