@@ -274,6 +274,25 @@ if (!subida.ok) {
   }
 
   if (!confirm("¿Borrar tu oferta normal?")) return;
+   // 1. Buscar la oferta para saber el archivo
+const { data: ofertas } = await db
+  .from("offers")
+  .select("*")
+  .eq("commerce-pin", pinActual)
+  .eq("type", "normal");
+
+// 2. Si hay archivo, borrarlo de R2
+if (ofertas && ofertas.length > 0) {
+  const url = ofertas[0]["media-url"];
+
+  if (url) {
+    const nombreArchivo = url.split("/").pop();
+
+    await fetch("TU_WORKER_URL/" + nombreArchivo, {
+      method: "DELETE"
+    });
+  }
+}
 const { data } = await db
   .from("offers")
   .select("*")
