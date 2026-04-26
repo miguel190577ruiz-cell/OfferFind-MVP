@@ -69,7 +69,10 @@ const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let pinActual = "";
-
+nombreActual = nombre;
+direccionActual = direccion;
+ofertaActual = oferta;
+archivoActual = archivo;
 function mostrar(id) {
   document.getElementById("app").style.display = "none";
   document.getElementById("comercio").style.display = "none";
