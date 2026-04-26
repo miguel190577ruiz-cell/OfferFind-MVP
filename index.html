@@ -93,7 +93,18 @@ let nombreActual = "";
 let direccionActual = "";
 let ofertaActual = "";
 let archivoActual = null;
-  
+ let sonidoActivo = false;
+
+function toggleSonido() {
+  sonidoActivo = !sonidoActivo;
+
+  document.getElementById("btnSonido").innerText = sonidoActivo ? "🔊" : "🔇";
+
+  document.querySelectorAll("video").forEach(video => {
+    video.muted = !sonidoActivo;
+    video.play().catch(() => {});
+  });
+} 
 function mostrar(id) {
   document.getElementById("app").style.display = "none";
   document.getElementById("comercio").style.display = "none";
