@@ -191,11 +191,11 @@ if (!subida.ok) {
     "commerce-pin": pinActual
   }]);
 
-    if (error) {
-      console.error(error);
-      alert("Error guardando oferta");
-      return;
-    }
+   if (error) {
+  console.error(error);
+  alert("Supabase: " + error.message);
+  return;
+   }
 
     alert("Oferta publicada");
     volverFeed();
