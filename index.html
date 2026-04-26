@@ -340,7 +340,27 @@ ${oferta.type === "express" && oferta.expires_at
         IR | GO →
       </a>
     `;
+if (oferta.type === "express" && oferta.expires_at) {
+  const el = div.querySelector(`#timer-${oferta.id}`);
 
+  function actualizarTimer() {
+    const diff = new Date(oferta.expires_at) - new Date();
+
+    if (diff <= 0) {
+      el.innerText = "⛔ Expirada";
+      return;
+    }
+
+    const mins = Math.floor(diff / 60000);
+    const horas = Math.floor(mins / 60);
+    const minutos = mins % 60;
+
+    el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
+  }
+
+  actualizarTimer();
+  setInterval(actualizarTimer, 60000);
+}
     app.appendChild(div);
   });
 }
