@@ -267,7 +267,50 @@ if (!subida.ok) {
   alert("Error técnico: " + e.message);
   }
 }
-  
+ async function borrarOfertaNormal() {
+  if (!pinActual) {
+    alert("No hay comercio activo");
+    return;
+  }
+
+  if (!confirm("¿Borrar tu oferta normal?")) return;
+
+  const { error } = await db
+    .from("offers")
+    .delete()
+    .eq("commerce-pin", pinActual)
+    .eq("type", "normal");
+
+  if (error) {
+    alert("Error borrando oferta");
+    return;
+  }
+
+  alert("Oferta normal eliminada");
+  volverFeed();
+ }
+  async function borrarOfertasExpress() {
+  if (!pinActual) {
+    alert("No hay comercio activo");
+    return;
+  }
+
+  if (!confirm("¿Borrar todas las ofertas express?")) return;
+
+  const { error } = await db
+    .from("offers")
+    .delete()
+    .eq("commerce-pin", pinActual)
+    .eq("type", "express");
+
+  if (error) {
+    alert("Error borrando express");
+    return;
+  }
+
+  alert("Ofertas express eliminadas");
+  volverFeed();
+  }
 async function publicarExpress() {
   const minutos = prompt(
     "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
