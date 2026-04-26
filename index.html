@@ -210,7 +210,18 @@ if (!subida.ok) {
   }
 }
 function publicarExpress() {
-  alert("Express en construcción");
+  const minutos = prompt(
+    "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
+  );
+
+  if (!minutos) return;
+
+  if (![30, 60, 90, 120, 150, 180].includes(Number(minutos))) {
+    alert("Tiempo no válido");
+    return;
+  }
+
+  alert("Has elegido " + minutos + " minutos (siguiente paso: publicar)");
 }
 async function cargarOfertas() {
   const app = document.getElementById("app");
