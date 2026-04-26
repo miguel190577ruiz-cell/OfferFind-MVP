@@ -73,9 +73,13 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   <input id="descripcionOferta" placeholder="Oferta y precio">
   <input type="file" id="videoInput" accept="video/*,image/*">
   <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
-  <button class="volver-btn" onclick="borrarOferta()">
-  Borrar mi oferta
-  </button>
+  <button class="volver-btn" onclick="borrarOfertaNormal()">
+  Borrar oferta normal
+</button>
+
+<button class="volver-btn" onclick="borrarOfertasExpress()">
+  Borrar ofertas express
+</button>
   <button onclick="publicarExpress()" class="admin-btn">
   ⚡ Publicar oferta express
   </button>
