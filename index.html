@@ -225,11 +225,10 @@ async function publicarExpress() {
 
   try {
     // 🔹 datos del formulario (igual que publicar normal)
-    const nombre = document.querySelector("input[placeholder='Nombre comercio']").value;
-    const direccion = document.querySelector("input[placeholder='Dirección']").value;
-    const oferta = document.querySelector("input[placeholder='Oferta']").value;
-    const archivo = document.querySelector("input[type='file']").files[0];
-
+const nombre = nombreActual;
+const direccion = direccionActual;
+const oferta = ofertaActual;
+const archivo = archivoActual;
     if (!nombre || !direccion || !oferta || !archivo) {
       alert("Completa todos los campos");
       return;
