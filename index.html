@@ -228,7 +228,9 @@ async function cargarOfertas() {
   app.innerHTML = "";
 
   data.forEach(oferta => {
-    const media = oferta.media_url || "";
+    const media = oferta["media-url"];
+
+if (!media) return;
     const esVideo = media.toLowerCase().includes(".mp4") || media.toLowerCase().includes(".mov") || media.toLowerCase().includes(".webm");
 
     const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(oferta.address || oferta.title);
