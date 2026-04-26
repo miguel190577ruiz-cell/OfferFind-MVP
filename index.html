@@ -159,7 +159,7 @@ function volverFeed() {
 async function crearComercio() {
   const pin = document.getElementById("nuevoPin").value.trim();
   const nombre = document.getElementById("nuevoNombre").value.trim();
-
+const direccion = document.getElementById("nuevaDireccion").value.trim();
   if (!pin || !nombre) {
     alert("Rellena PIN y nombre");
     return;
