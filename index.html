@@ -180,7 +180,7 @@ if (!subida.ok) {
       .delete()
       .eq("commerce-pin", pinActual);
 
-    const { error } = await supabase
+    const { error } = await db
   .from("offers")
   .insert([{
     title: nombre,
