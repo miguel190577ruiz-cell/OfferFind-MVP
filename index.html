@@ -209,19 +209,78 @@ if (!subida.ok) {
   alert("Error técnico: " + e.message);
   }
 }
-function publicarExpress() {
+async function publicarExpress() {
   const minutos = prompt(
     "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
   );
 
   if (!minutos) return;
 
-  if (![30, 60, 90, 120, 150, 180].includes(Number(minutos))) {
+  const mins = Number(minutos);
+
+  if (![30, 60, 90, 120, 150, 180].includes(mins)) {
     alert("Tiempo no válido");
     return;
   }
 
-  alert("Has elegido " + minutos + " minutos (siguiente paso: publicar)");
+  try {
+    // 🔹 datos del formulario (igual que publicar normal)
+    const nombre = document.querySelector("input[placeholder='Nombre comercio']").value;
+    const direccion = document.querySelector("input[placeholder='Dirección']").value;
+    const oferta = document.querySelector("input[placeholder='Oferta']").value;
+    const archivo = document.querySelector("input[type='file']").files[0];
+
+    if (!nombre || !direccion || !oferta || !archivo) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    // 🔹 subir imagen (igual que ya haces)
+    const nombreArchivo = Date.now() + "_" + archivo.name;
+
+    const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+    if (!subida.ok) {
+      alert("Error subiendo archivo");
+      return;
+    }
+
+    const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
+
+    // 🔹 calcular expiración
+    const ahora = new Date();
+    const expires = new Date(ahora.getTime() + mins * 60000);
+
+    // 🔹 insertar en DB (NO borrar normal)
+    const { error } = await db
+      .from("offers")
+      .insert([{
+        title: nombre,
+        description: oferta,
+        price: "",
+        address: direccion,
+        media_url: mediaUrl,
+        "commerce-pin": pinActual,
+        type: "express",
+        expires_at: expires.toISOString()
+      }]);
+
+    if (error) {
+      console.error(error);
+      alert("Error guardando express");
+      return;
+    }
+
+    alert("Oferta express publicada");
+    volverFeed();
+
+  } catch (e) {
+    console.error(e);
+    alert("Error técnico: " + e.message);
+  }
 }
 async function cargarOfertas() {
   const app = document.getElementById("app");
