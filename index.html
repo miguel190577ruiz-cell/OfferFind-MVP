@@ -96,7 +96,7 @@ const SUPABASE_KEY = "sb_publishable_wy2qvGG23Ozj-unBH8YqKQ_ZyC7ArIu";
 const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-registrarVisita()
+
 let pinActual = "";
 
 let nombreActual = "";
@@ -413,7 +413,6 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
 
 cargarOfertas();
-
  let slideActual = 0;
 let touchInicioY = 0;
 let scrollBloqueado = false;
@@ -438,7 +437,9 @@ window.addEventListener("touchstart", (e) => {
   touchInicioY = e.touches[0].clientY;
 }, { passive: false });
 
-
+window.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+}, { passive: false });
 
 window.addEventListener("touchend", (e) => {
   if (scrollBloqueado) return;
