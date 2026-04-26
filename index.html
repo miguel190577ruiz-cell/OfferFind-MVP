@@ -438,9 +438,7 @@ window.addEventListener("touchstart", (e) => {
   touchInicioY = e.touches[0].clientY;
 }, { passive: false });
 
-window.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-}, { passive: false });
+
 
 window.addEventListener("touchend", (e) => {
   if (scrollBloqueado) return;
