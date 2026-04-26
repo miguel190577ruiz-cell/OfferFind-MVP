@@ -400,7 +400,54 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
 
 cargarOfertas();
- 
+ let slideActual = 0;
+let touchInicioY = 0;
+let scrollBloqueado = false;
+
+function irASlide(index) {
+  const cards = document.querySelectorAll(".offer-card");
+  if (!cards.length) return;
+
+  slideActual = Math.max(0, Math.min(index, cards.length - 1));
+
+  window.scrollTo({
+    top: cards[slideActual].offsetTop,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
+    controlarVideosVisibles();
+  }, 450);
+}
+
+window.addEventListener("touchstart", (e) => {
+  touchInicioY = e.touches[0].clientY;
+}, { passive: false });
+
+window.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("touchend", (e) => {
+  if (scrollBloqueado) return;
+
+  const touchFinY = e.changedTouches[0].clientY;
+  const diferencia = touchInicioY - touchFinY;
+
+  if (Math.abs(diferencia) < 40) return;
+
+  scrollBloqueado = true;
+
+  if (diferencia > 0) {
+    irASlide(slideActual + 1);
+  } else {
+    irASlide(slideActual - 1);
+  }
+
+  setTimeout(() => {
+    scrollBloqueado = false;
+  }, 600);
+}, { passive: false });
   function controlarVideosVisibles() {
   document.querySelectorAll("video").forEach(video => {
     const rect = video.getBoundingClientRect();
