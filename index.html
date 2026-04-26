@@ -240,7 +240,7 @@ async function cargarOfertas() {
     div.innerHTML = `
       ${esVideo
         ? `<video src="${media}" autoplay muted loop playsinline controls></video>`
-        : `<img src="${media}" class="media-img" />
+        : `<img src="${media}">`
       }
 
       <h2>${oferta.title || ""}</h2>
