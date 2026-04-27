@@ -443,15 +443,15 @@ if (data && data.length > 0) {
 // 1. Obtener ofertas express
 const { data: offers } = await db
   .from("offers")
-  .select("media_url") // ⚠️ cambia si tu campo se llama distinto
+  .select("media-url") // ⚠️ cambia si tu campo se llama distinto
   .eq("commerce-pin", pinActual)
   .eq("type", "express");
 
 // 2. Borrar archivos en R2
 for (const offer of offers) {
-  if (!offer.media_url) continue;
+  if (!offer.media-url) continue;
 
-  const key = offer.media_url.split("/").pop();
+  const key = offer.media-url.split("/").pop();
 
   await fetch(`https://TU-WORKER-URL/?file=${encodeURIComponent(key)}`, {
     method: "DELETE"
@@ -460,7 +460,7 @@ for (const offer of offers) {
   // 1. Obtener las ofertas primero
   const { data: offers, error: fetchError } = await db
     .from("offers")
-    .select("media_url") // 👈 IMPORTANTE (ajusta si tu campo se llama distinto)
+    .select("media-url") // 👈 IMPORTANTE (ajusta si tu campo se llama distinto)
     .eq("commerce-pin", pinActual)
     .eq("type", "express");
 
@@ -471,7 +471,7 @@ for (const offer of offers) {
 
   // 2. Borrar archivos en R2
   for (const offer of offers) {
-    if (!offer.media_url) continue;
+    if (!offer.media-url) continue;
 
     const key = offer.media_url.split("/").pop(); // 👈 saca el nombre archivo
 
