@@ -531,9 +531,9 @@ const archivo = document.getElementById("videoInput").files[0];
       }]);
 
     if (error) {
-      console.error(error);
-      alert("Error guardando express");
-      return;
+  console.error(error);
+  alert("Error guardando express: " + error.message);
+  return;
     }
 
     alert("Oferta express publicada");
