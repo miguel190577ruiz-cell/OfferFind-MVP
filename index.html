@@ -494,23 +494,27 @@ if (!media) return;
     div.style = "margin-bottom:40px;";
 
     div.innerHTML = `
-      ${esVideo
-        ? `<video src="${media}" autoplay muted loop playsinline controls></video>`
-        : `<img src="${media}">`
-      }
+  ${esVideo 
+    ? `<video src="${media}" autoplay muted loop playsinline></video>` 
+    : `<img src="${media}">`
+  }
 
-      <h2>${oferta.title || ""}</h2>
+  <div class="overlay-gradient"></div>
 
-${oferta.type === "express" && oferta.expires_at
-  ? `<p class="offer-text express-text" id="timer-${oferta.id}">⚡ EXPRESS</p>`
-  : ""
-}
-<p class="offer-text">${oferta.description || ""}</p>
+  <div class="offer-info">
+    <h2>${oferta.title || "OfferFind"}</h2>
 
-      <a class="go-btn" href="${mapsUrl}" target="_blank">
-        IR | GO →
-      </a>
-    `;
+    ${oferta.type === "express" && oferta.expires_at ? `
+      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
+    ` : ""}
+
+    <p class="offer-text">${oferta.description || ""}</p>
+  </div>
+
+  <a class="go-btn" href="${mapsUrl}" target="_blank">
+    IR | GO →
+  </a>
+`;
 if (oferta.type === "express" && oferta.expires_at) {
   const el = div.querySelector(`#timer-${oferta.id}`);
 
