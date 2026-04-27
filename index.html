@@ -560,6 +560,7 @@ async function cargarOfertas() {
   }
 
   if (!data || data.length === 0) {
+    alert("Ofertas cargadas: " + data.length);
     app.innerHTML = "<h1>OfferFind</h1><p>Todavía no hay ofertas publicadas</p>";
     return;
   }
