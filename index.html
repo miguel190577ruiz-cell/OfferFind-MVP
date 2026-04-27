@@ -323,9 +323,9 @@ for (const oferta of anteriores || []) {
   if (oferta["media-url"]) {
     const fileName = oferta["media-url"].split("/").pop()
 
-    await fetch(WORKER_URL + fileName, {
-      method: "DELETE"
-    });
+    await fetch(WORKER_URL + "?file=" + encodeURIComponent(fileName), {
+  method: "DELETE"
+});
   }
 }
     const nombreArchivo = Date.now() + "-" + archivo.name;
