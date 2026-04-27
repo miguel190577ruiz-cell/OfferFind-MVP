@@ -440,6 +440,7 @@ if (data && data.length > 0) {
   }
 
   if (!confirm("¿Borrar todas las ofertas express?")) return;
+    alert("He entrado en borrar express");
 // 1. Obtener ofertas express
 const { data: offers, error: fetchError } = await db
   .from("offers")
