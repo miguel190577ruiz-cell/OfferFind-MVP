@@ -118,7 +118,13 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   border-radius: 30px;
   font-weight: bold;
   font-size: 20px;
+  animation: goPulse 1.8s infinite;
 }
+  @keyframes goPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+  }
 </style>
 </head>
 
