@@ -221,7 +221,16 @@ let direccionActual = "";
 let ofertaActual = "";
 let archivoActual = null;
  let sonidoActivo = false;
+function getVisitorId() {
+  let visitorId = localStorage.getItem("visitor_id");
 
+  if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("visitor_id", visitorId);
+  }
+
+  return visitorId;
+}
 function toggleSonido() {
   sonidoActivo = !sonidoActivo;
 
