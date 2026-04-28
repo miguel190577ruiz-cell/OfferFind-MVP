@@ -630,10 +630,9 @@ if (!media) return;
 
     <p class="offer-text">${oferta.description || ""}</p>
   </div>
-
-  <a class="go-btn" href="${mapsUrl}" target="_blank">
-    IR | GO →
-  </a>
+<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+  IR | GO →
+</a>
 `;
 if (oferta.type === "express" && oferta.expires_at) {
   const el = div.querySelector(`#timer-${oferta.id}`);
