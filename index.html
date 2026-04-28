@@ -232,7 +232,7 @@ function getVisitorId() {
   return visitorId;
 }
   async function trackEvent(type, offerId = null) {
-  console.log("EVENTO:"+type);
+  alert("EVENTO:"+type);
   const visitorId = getVisitorId();
 
   await db.from("analytics_events").insert([
