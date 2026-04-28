@@ -232,16 +232,21 @@ function getVisitorId() {
   return visitorId;
 }
   async function trackEvent(type, offerId = null) {
-  alert("EVENTO:"+type);
   const visitorId = getVisitorId();
 
-  await db.from("analytics_events").insert([
+  const { error } = await db.from("analytics_events").insert([
     {
       event_type: type,
       visitor_id: visitorId,
       offer_id: offerId
     }
   ]);
+
+  if (error) {
+    alert("Error analytics: " + error.message);
+  } else {
+    alert("Analytics OK: " + type);
+  }
   }
 function toggleSonido() {
   sonidoActivo = !sonidoActivo;
