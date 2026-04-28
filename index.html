@@ -564,6 +564,16 @@ const archivo = document.getElementById("videoInput").files[0];
   }
 }
 async function cargarOfertas() {
+  trackEvent("visit");
+
+const lastVisit = localStorage.getItem("last_visit_date");
+const today = new Date().toDateString();
+
+if (lastVisit && lastVisit !== today) {
+  trackEvent("return_visit");
+}
+
+localStorage.setItem("last_visit_date", today);
   const app = document.getElementById("app");
 
   const { data, error } = await db
