@@ -624,8 +624,8 @@ if (!media) return;
 
     div.innerHTML = `
   ${esVideo 
-    ? `<video src="${media}" autoplay muted loop playsinline></video>` 
-    : `<img src="${media}">`
+    ? `<video src="${media}" autoplay muted loop playsinline preload="metadata"></video>` 
+: `<img src="${media}">`
   }
 <div class="offer-gradient"></div>
   <div class="overlay-gradient"></div>
