@@ -704,6 +704,9 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
     app.appendChild(div);
   });
+  setTimeout(() => {
+  controlarVideosVisibles();
+}, 300);
 }
 
 cargarOfertas();
