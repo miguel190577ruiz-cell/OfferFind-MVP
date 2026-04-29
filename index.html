@@ -354,17 +354,16 @@ async function publicarOferta() {
       URL.revokeObjectURL(video.src);
       resolve(video.duration <= 8);
     };
-
+video.src = URL.createObjectURL(archivo);
+  });
 
   if (!duracionOk) {
     alert("El vídeo debe durar máximo 8 segundos");
     document.getElementById("videoInput").value = "";
     return;
   }
-  };
 
-  video.src = URL.createObjectURL(archivo);
-  }
+  
 nombreActual = nombre;
 direccionActual = direccion;
 ofertaActual = oferta;
@@ -549,17 +548,16 @@ const archivo = document.getElementById("videoInput").files[0];
       URL.revokeObjectURL(video.src);
       resolve(video.duration <= 8);
     };
-
+ video.src = URL.createObjectURL(archivo);
+    });
 
   if (!duracionOk) {
     alert("El vídeo debe durar máximo 8 segundos");
     document.getElementById("videoInput").value = "";
     return;
   }
-   };
 
-  video.src = URL.createObjectURL(archivo);
-    }
+ 
     if (!nombre || !direccion || !oferta || !archivo) {
       alert("Completa todos los campos");
       return;
