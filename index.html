@@ -655,7 +655,18 @@ const listaFinal= data;
 listaFinal.forEach(oferta => {
     if (oferta.type === "express" && oferta.expires_at) {
   const caducada = new Date(oferta.expires_at) <= new Date();
-  if (caducada) return;
+
+  if (caducada) {
+    if (oferta["media-url"]) {
+      await fetch(WORKER_URL + "?file=" + encodeURIComponent(oferta["media-url"].split("/").pop()), {
+        method: "DELETE"
+      });
+    }
+
+    await db.from("offers").delete().eq("id", oferta.id);
+
+    return;
+  }
     }
     const media = oferta["media-url"];
 
