@@ -770,6 +770,14 @@ window.addEventListener("scroll", async () => {
     cargando = false;
   }
 });
+  window.addEventListener("scroll", () => {
+  if (cargando) return;
+
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+    cargando = true;
+    cargarOfertas();
+  }
+});
 </script>
 
 </body>
