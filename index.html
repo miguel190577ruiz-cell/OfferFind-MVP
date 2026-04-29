@@ -346,14 +346,23 @@ async function publicarOferta() {
   const oferta = document.getElementById("descripcionOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
   if (archivo && archivo.type.startsWith("video/")) {
-  const video = document.createElement("video");
-  video.preload = "metadata";
+  const duracionOk = await new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.preload = "metadata";
 
-  video.onloadedmetadata = () => {
-    if (video.duration > 8) {
-      alert("El vídeo debe durar máximo 8 segundos");
-      document.getElementById("videoInput").value = "";
-    }
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src);
+      resolve(video.duration <= 8);
+    };
+
+    video.src = URL.createObjectURL(archivo);
+  });
+
+  if (!duracionOk) {
+    alert("El vídeo debe durar máximo 8 segundos");
+    document.getElementById("videoInput").value = "";
+    return;
+  }
   };
 
   video.src = URL.createObjectURL(archivo);
