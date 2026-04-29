@@ -221,6 +221,9 @@ let direccionActual = "";
 let ofertaActual = "";
 let archivoActual = null;
  let sonidoActivo = false;
+  let pagina = 0;
+const TAMANO = 10;
+let cargando = false;
 function getVisitorId() {
   let visitorId = localStorage.getItem("visitor_id");
 
