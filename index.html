@@ -355,8 +355,6 @@ async function publicarOferta() {
       resolve(video.duration <= 8);
     };
 
-    video.src = URL.createObjectURL(archivo);
-  });
 
   if (!duracionOk) {
     alert("El vídeo debe durar máximo 8 segundos");
@@ -552,8 +550,6 @@ const archivo = document.getElementById("videoInput").files[0];
       resolve(video.duration <= 8);
     };
 
-    video.src = URL.createObjectURL(archivo);
-  });
 
   if (!duracionOk) {
     alert("El vídeo debe durar máximo 8 segundos");
