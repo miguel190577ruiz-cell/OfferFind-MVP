@@ -589,7 +589,7 @@ localStorage.setItem("last_visit_date", today);
     .from("offers")
     .select("*")
     .order("created_at", { ascending:false })
-    .limit(10);
+    .limit(100);
 
   if (error) {
     console.error(error);
