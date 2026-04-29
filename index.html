@@ -662,7 +662,7 @@ if (!media) return;
 
     div.innerHTML = `
   ${esVideo 
-    ? `<video src="${media}" autoplay muted loop playsinline preload="metadata"></video>` 
+    ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
 : `<img src="${media}">`
   }
 <div class="offer-gradient"></div>
