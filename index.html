@@ -601,7 +601,7 @@ localStorage.setItem("last_visit_date", today);
 
   app.innerHTML = "";
   
-const listaFinal= data.slice(0,10);
+const listaFinal= data;
 
 listaFinal.forEach(oferta => {
     if (oferta.type === "express" && oferta.expires_at) {
