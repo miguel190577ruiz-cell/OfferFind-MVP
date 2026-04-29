@@ -666,8 +666,6 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
     app.appendChild(div);
   });
-  pagina++;
-cargando = false;
 }
 
 cargarOfertas();
@@ -740,35 +738,6 @@ window.addEventListener("touchend", (e) => {
 
 window.addEventListener("touchend", () => {
   setTimeout(controlarVideosVisibles, 300);
-});
-  let offset = 0;
-const limit = 10;
-let cargando = false;
-
-window.addEventListener("scroll", async () => {
-  if (cargando) return;
-
-  const scrollBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-
-  if (scrollBottom) {
-    cargando = true;
-    offset += limit;
-
-    const { data, error } = await db
-      .from("offers")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    if (!error && data.length > 0) {
-      data.forEach(oferta => {
-        // ⚠️ AQUÍ reutilizas tu código de pintar oferta
-        pintarOferta(oferta); 
-      });
-    }
-
-    cargando = false;
-  }
 });
   
 </script>
