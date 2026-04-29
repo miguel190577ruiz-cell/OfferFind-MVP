@@ -652,7 +652,7 @@ localStorage.setItem("last_visit_date", today);
   
 const listaFinal= data;
 
-listaFinal.forEach(oferta => {
+listaFinal.forEach(async oferta => {
     if (oferta.type === "express" && oferta.expires_at) {
   const caducada = new Date(oferta.expires_at) <= new Date();
 
