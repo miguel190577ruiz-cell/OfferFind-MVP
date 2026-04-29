@@ -755,7 +755,32 @@ window.addEventListener("touchend", (e) => {
     scrollBloqueado = false;
   }, 600);
 }, { passive: false });
-  
+  function controlarVideosVisibles() {
+  const videos = document.querySelectorAll("video");
+
+  videos.forEach((video, index) => {
+    const rect = video.getBoundingClientRect();
+
+    const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+
+    if (visible) {
+      // 🔥 cargar vídeo si no tiene src
+      if (!video.src) {
+        video.src = video.dataset.src;
+      }
+
+      video.muted = !sonidoActivo;
+      video.play().catch(() => {});
+    } else {
+      // ❌ descargar vídeo para liberar memoria
+      if (video.src) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+    }
+  });
+  }
   window.addEventListener("scroll", controlarVideosVisibles);
 
 window.addEventListener("touchend", () => {
