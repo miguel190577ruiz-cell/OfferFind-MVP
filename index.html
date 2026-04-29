@@ -589,7 +589,7 @@ localStorage.setItem("last_visit_date", today);
     .from("offers")
     .select("*")
     .order("created_at", { ascending:false })
-    .range(pagina * TAMANO, (pagina + 1) * TAMANO - 1);
+    .limit(10);
 
   if (error) {
     console.error(error);
