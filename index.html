@@ -345,6 +345,19 @@ async function publicarOferta() {
   const direccion = document.getElementById("direccionLocal").value.trim();
   const oferta = document.getElementById("descripcionOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
+  if (archivo && archivo.type.startsWith("video/")) {
+  const video = document.createElement("video");
+  video.preload = "metadata";
+
+  video.onloadedmetadata = () => {
+    if (video.duration > 8) {
+      alert("El vídeo debe durar máximo 8 segundos");
+      document.getElementById("videoInput").value = "";
+    }
+  };
+
+  video.src = URL.createObjectURL(archivo);
+  }
 nombreActual = nombre;
 direccionActual = direccion;
 ofertaActual = oferta;
