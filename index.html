@@ -548,6 +548,7 @@ async function publicarExpress() {
 const nombre = document.getElementById("nombreLocal").value.trim();
 const direccion = document.getElementById("direccionLocal").value.trim();
 const oferta = document.getElementById("descripcionOferta").value.trim();
+   const precio = document.getElementById("precioOferta").value.trim(); 
 const archivo = document.getElementById("videoInput").files[0];
    if (archivo && archivo.type.startsWith("video/")) {
   const duracionOk = await new Promise((resolve) => {
@@ -598,7 +599,7 @@ const archivo = document.getElementById("videoInput").files[0];
       .insert([{
         title: nombre,
         description: oferta,
-        price: "",
+        price:precio,
         address: direccion,
         "media-url": mediaUrl,
         "commerce-pin": pinActual,
