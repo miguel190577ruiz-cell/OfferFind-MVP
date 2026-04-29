@@ -585,7 +585,8 @@ localStorage.setItem("last_visit_date", today);
   const { data, error } = await db
     .from("offers")
     .select("*")
-    .order("created_at", { ascending:false });
+    .order("created_at", { ascending:false })
+    .limit(10);
 
   if (error) {
     console.error(error);
