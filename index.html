@@ -755,23 +755,7 @@ window.addEventListener("touchend", (e) => {
     scrollBloqueado = false;
   }, 600);
 }, { passive: false });
-  function controlarVideosVisibles() {
-  document.querySelectorAll("video").forEach(video => {
-    const rect = video.getBoundingClientRect();
-
-    // solo el que está en el centro de pantalla
-    const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
-
-    if (visible) {
-      video.muted = !sonidoActivo;
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-      video.currentTime = 0; // 👈 clave: reinicia
-      video.muted = true;
-    }
-  });
-  }
+  
   window.addEventListener("scroll", controlarVideosVisibles);
 
 window.addEventListener("touchend", () => {
