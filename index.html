@@ -678,6 +678,7 @@ if (!media) return;
     ` : ""}
 
     <p class="offer-text">${oferta.description || ""}</p>
+    ${oferta.price ? `<p class="offer-price">${oferta.price}</p>` : ""}
   </div>
 <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
   IR | GO →
