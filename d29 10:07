@@ -1,0 +1,793 @@
+
+<!DOCTYPE html>  
+<html lang="es"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfferFind MVP</title>
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body { margin:0; background:black; color:white; font-family:'Poppins', sans-serif; }
+#app { min-height:100vh; padding:0px; box-sizing:border-box; }
+#comercio, #panelComercio, #panelAdmin { display:none; min-height:100vh; padding:30px; box-sizing:border-box; }
+button { padding:14px 18px; border:none; border-radius:24px; font-weight:bold; }
+#btnComerciante { position:fixed; top:20px; right:20px; z-index:99999; background:#111; color:white; }
+  #btnSonido {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 99999;
+  background: #111;
+  color: white;
+  font-size: 22px;
+  }
+.admin-btn { width:100%; margin-top:15px; background:#B4FF00; color:black; }
+.volver-btn { width:100%; margin-top:15px; background:#222; color:white; }
+input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none; font-size:18px; box-sizing:border-box; }
+.offer-card {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+.offer-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  z-index: 2;
+}
+/* VIDEO / IMAGEN FULL */
+.offer-card video,
+.offer-card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  blackground:black;
+  z-index: 1;
+}
+
+/* OSCURECER ABAJO (pro visual) */
+.overlay-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  z-index: 2;
+}
+
+/* TEXTO */
+.offer-info {
+  position: absolute;
+  bottom: 110px;
+  left: 20px;
+  right: 20px;
+  z-index: 3;
+  animation: textIn 0.45s ease-out;
+}
+.offer-info h2 {
+  color: white;
+  font-size: 42px;
+  font-weight: 900;
+  margin: 0 0 18px 0;
+  text-shadow: 0 3px 12px black;
+}
+
+.offer-text {
+  color: #F2D7A0;
+  font-size: 24px;
+  font-weight: 400;
+  margin: 18px 0 0 0;
+  text-shadow: 0 3px 12px black;
+}
+
+.express-text {
+  color: #ff2a00;
+  font-size: 18px;
+  font-weight: 900;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  animation: pulse 1.2s infinite;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+  @keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+  }
+/* BOTÓN */
+.go-btn {
+  position: absolute;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
+  z-index: 4;
+
+  display: block;
+  text-align: center;
+
+  /* 💎 EFECTO CRISTAL */
+  background: rgba(180, 255, 0, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  color: black;
+  padding: 18px;
+  border-radius: 30px;
+
+  font-weight: bold;
+  font-size: 20px;
+
+  /* ✨ brillo suave */
+  box-shadow: 
+    box-shadow: 
+  0 8px 30px rgba(180, 255, 0, 0.8),
+  0 0 20px rgba(180, 255, 0, 0.1),
+  inset 0 1px 0 rgba(255,255,255,0.6);
+
+  /* ⚡ animación ligera */
+  transition: all 0.2s ease;
+}
+  @keyframes goPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+  }
+  @keyframes textIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  }
+</style>
+</head>
+
+<body>
+
+<button id="btnComerciante" onclick="irComercio()">Soy comerciante</button>
+<button id="btnSonido" onclick="toggleSonido()">🔇</button>
+<div id="app">
+  <h1>OfferFind</h1>
+  <p>Feed de ofertas</p>
+</div>
+
+<div id="comercio">
+  <h2>Zona Comercio</h2>
+  <input id="pinComercio" placeholder="PIN del comercio">
+  <button class="admin-btn" onclick="entrarComercio()">Entrar como comercio</button>
+  <button class="admin-btn" onclick="entrarAdmin()">Soy administrador</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelComercio">
+  <h2>Mi comercio</h2>
+  <input id="nombreLocal" placeholder="Nombre del local">
+  <input id="direccionLocal" placeholder="Dirección">
+  <input id="descripcionOferta" placeholder="Oferta y precio">
+  <input type="file" id="videoInput" accept="video/*,image/*">
+  <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
+  <button class="volver-btn" onclick="borrarOfertaNormal()">
+  Borrar oferta normal
+</button>
+
+<button class="volver-btn" onclick="borrarOfertasExpress()">
+  Borrar ofertas express
+</button>
+  <button onclick="publicarExpress()" class="admin-btn">
+  ⚡ Publicar oferta express
+  </button>
+  <button class="volver-btn" onclick="volverFeed()">Volver al feed</button>
+</div>
+
+<div id="panelAdmin">
+  <h2>Administrador</h2>
+  <input id="nuevoPin" placeholder="PIN del comercio">
+  <input id="nuevoNombre" placeholder="Nombre del comercio">
+  <input id="nuevaDireccion" placeholder="Dirección del comercio">
+  <button class="admin-btn" onclick="crearComercio()">Crear comercio</button>
+  <button class="volver-btn" onclick="volverFeed()">Volver</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://mmfuhvlxjzvfotonjycw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wy2qvGG23Ozj-unBH8YqKQ_ZyC7ArIu";
+const WORKER_URL = "https://shy-wave-7641.miguel190577ruiz.workers.dev/";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let pinActual = "";
+
+let nombreActual = "";
+let direccionActual = "";
+let ofertaActual = "";
+let archivoActual = null;
+ let sonidoActivo = false;
+  let pagina = 0;
+const TAMANO = 10;
+let cargando = false;
+function getVisitorId() {
+  let visitorId = localStorage.getItem("visitor_id");
+
+  if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("visitor_id", visitorId);
+  }
+
+  return visitorId;
+}
+  async function trackEvent(type, offerId = null) {
+  const visitorId = getVisitorId();
+
+  const { error } = await db.from("analytics_events").insert([
+    {
+      event_type: type,
+      visitor_id: visitorId,
+      offer_id: offerId
+    }
+  ]);
+
+  if (error) {
+    console.error("Error analytics: ", error);
+  } else {
+    console.log("Analytics OK:", type);
+  }
+  }
+function toggleSonido() {
+  sonidoActivo = !sonidoActivo;
+
+  document.getElementById("btnSonido").innerText = sonidoActivo ? "🔊" : "🔇";
+
+  document.querySelectorAll("video").forEach(video => {
+    video.muted = !sonidoActivo;
+    video.play().catch(() => {});
+  });
+  controlarVideosVisibles();
+} 
+function mostrar(id) {
+  document.getElementById("app").style.display = "none";
+  document.getElementById("comercio").style.display = "none";
+  document.getElementById("panelComercio").style.display = "none";
+  document.getElementById("panelAdmin").style.display = "none";
+  document.getElementById(id).style.display = "block";
+}
+
+function irComercio() {
+  mostrar("comercio");
+}
+
+async function entrarComercio() {
+  const pin = document.getElementById("pinComercio").value.trim();
+
+  if (!pin) {
+    alert("Introduce tu PIN");
+    return;
+  }
+
+  const { data, error } = await db
+    .from("commerces")
+    .select("*")
+    .eq("pin", pin)
+    .maybeSingle();
+
+  if (error || !data) {
+    alert("PIN no válido");
+    return;
+  }
+
+  pinActual = pin;
+  document.getElementById("nombreLocal").value = data.nombre || "";
+  document.getElementById("direccionLocal").value = data.address || "";
+  mostrar("panelComercio");
+}
+
+function entrarAdmin() {
+  const pin = prompt("PIN administrador");
+
+  if (pin !== "1234") {
+    alert("PIN incorrecto");
+    return;
+  }
+
+  mostrar("panelAdmin");
+}
+
+function volverFeed() {
+  mostrar("app");
+  cargarOfertas();
+}
+
+async function crearComercio() {
+  const pin = document.getElementById("nuevoPin").value.trim();
+  const nombre = document.getElementById("nuevoNombre").value.trim();
+const direccion = document.getElementById("nuevaDireccion").value.trim();
+  if (!pin || !nombre) {
+    alert("Rellena PIN y nombre");
+    return;
+  }
+
+  const { error } = await db
+    .from("commerces")
+    .insert([{ pin: pin, nombre: nombre, address: direccion }]);
+
+  if (error) {
+    console.error(error);
+    alert("Error creando comercio");
+    return;
+  }
+
+  alert("Comercio creado");
+
+  document.getElementById("nuevoPin").value = "";
+  document.getElementById("nuevoNombre").value = "";
+}
+
+async function publicarOferta() {
+  const nombre = document.getElementById("nombreLocal").value.trim();
+  const direccion = document.getElementById("direccionLocal").value.trim();
+  const oferta = document.getElementById("descripcionOferta").value.trim();
+  const archivo = document.getElementById("videoInput").files[0];
+  if (archivo && archivo.type.startsWith("video/")) {
+  const duracionOk = await new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.preload = "metadata";
+
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src);
+      resolve(video.duration <= 8);
+    };
+video.src = URL.createObjectURL(archivo);
+  });
+
+  if (!duracionOk) {
+    alert("El vídeo debe durar máximo 8 segundos");
+    document.getElementById("videoInput").value = "";
+    return;
+  }
+  }
+  
+nombreActual = nombre;
+direccionActual = direccion;
+ofertaActual = oferta;
+archivoActual = archivo;
+  if (!pinActual) {
+    alert("Primero entra con un PIN de comercio válido");
+    return;
+  }
+
+  if (!nombre || !direccion || !oferta || !archivo) {
+    alert("Rellena todo y sube un vídeo o foto");
+    return;
+  }
+
+  try {
+    // 🔍 BUSCAR OFERTA NORMAL ANTERIOR
+const { data: anteriores } = await db
+  .from("offers")
+  .select("media-url")
+  .eq("commerce-pin", pinActual)
+  .eq("type", "normal")
+    // 🧹 BORRAR ARCHIVO ANTIGUO EN R2
+for (const oferta of anteriores || []) {
+  if (oferta["media-url"]) {
+    const fileName = oferta["media-url"].split("/").pop()
+
+    await fetch(WORKER_URL + "?file=" + encodeURIComponent(fileName), {
+  method: "DELETE"
+});
+  }
+}
+    const nombreArchivo = Date.now() + "-" + archivo.name;
+
+    const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+if (!subida.ok) {
+  alert("Error subiendo vídeo/foto. Código: " + subida.status);
+  return;
+}
+
+    const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
+
+    await db
+      .from("offers")
+     .delete()
+.eq("commerce-pin", pinActual)
+.eq("type", "normal");
+
+    const { error } = await db
+  .from("offers")
+  .insert([{
+    title: nombre,
+    description: oferta,
+    price: "",
+    address: direccion,
+    "media-url": mediaUrl,
+    "commerce-pin": pinActual,
+    type:"normal"
+  }]);
+
+   if (error) {
+  console.error(error);
+  alert("Supabase: " + error.message);
+  return;
+   }
+
+    alert("Oferta publicada");
+    volverFeed();
+
+  } catch (e) {
+  console.error(e);
+  alert("Error técnico: " + e.message);
+  }
+}
+ async function borrarOfertaNormal() {
+  if (!pinActual) {
+    alert("No hay comercio activo");
+    return;
+  }
+
+  if (!confirm("¿Borrar tu oferta normal?")) return;
+// Obtener oferta normal para borrar su archivo en R2
+const { data: offers } = await db
+  .from("offers")
+  .select("media-url")
+  .eq("commerce-pin", pinActual)
+  .eq("type", "normal");
+
+// Borrar archivo en R2
+for (const offer of offers || []) {
+  const mediaUrl = offer["media-url"];
+  if (!mediaUrl) continue;
+
+  const key = mediaUrl.split("/").pop();
+
+  await fetch(WORKER_URL + "?file=" + encodeURIComponent(key), {
+    method: "DELETE"
+  });
+}
+  const { error } = await db
+    .from("offers")
+    .delete()
+    .eq("commerce-pin", pinActual)
+    .eq("type", "normal");
+
+  if (error) {
+    alert("Error borrando oferta");
+    return;
+  }
+
+  alert("Oferta normal eliminada");
+  volverFeed();
+ }
+ async function borrarOfertasExpress() {
+  if (!pinActual) {
+    alert("No hay comercio activo");
+    return;
+  }
+
+  if (!confirm("¿Borrar todas las ofertas express?")) return;
+// Obtener ofertas express (solo URLs)
+const { data: offers } = await db
+  .from("offers")
+  .select("media-url")
+  .eq("commerce-pin", pinActual)
+  .eq("type", "express");
+
+// Borrar archivos en R2
+for (const offer of offers || []) {
+  const mediaUrl = offer["media-url"];
+  if (!mediaUrl) continue;
+
+  const key = mediaUrl.split("/").pop();
+
+  await fetch(WORKER_URL + "?file=" + encodeURIComponent(key), {
+    method: "DELETE"
+  });
+}
+  const { error } = await db
+    .from("offers")
+    .delete()
+    .eq("commerce-pin", pinActual)
+    .eq("type", "express");
+
+  if (error) {
+    alert("Error borrando express");
+    return;
+  }
+
+  alert("Ofertas express eliminadas");
+  volverFeed();
+ }
+async function publicarExpress() {
+  const minutos = prompt(
+    "Duración oferta express:\n\n30 = 30 min\n60 = 1 hora\n90 = 1.5h\n120 = 2h\n150 = 2.5h\n180 = 3h"
+  );
+
+  if (!minutos) return;
+
+  const mins = Number(minutos);
+
+  if (![30, 60, 90, 120, 150, 180].includes(mins)) {
+    alert("Tiempo no válido");
+    return;
+  }
+
+  try {
+    // 🔹 datos del formulario (igual que publicar normal)
+const nombre = document.getElementById("nombreLocal").value.trim();
+const direccion = document.getElementById("direccionLocal").value.trim();
+const oferta = document.getElementById("descripcionOferta").value.trim();
+const archivo = document.getElementById("videoInput").files[0];
+   if (archivo && archivo.type.startsWith("video/")) {
+  const duracionOk = await new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.preload = "metadata";
+
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src);
+      resolve(video.duration <= 8);
+    };
+ video.src = URL.createObjectURL(archivo);
+    });
+
+  if (!duracionOk) {
+    alert("El vídeo debe durar máximo 8 segundos");
+    document.getElementById("videoInput").value = "";
+    return;
+  }
+}
+ 
+    if (!nombre || !direccion || !oferta || !archivo) {
+      alert("Completa todos los campos");
+      return;
+    }
+
+    // 🔹 subir imagen (igual que ya haces)
+    const nombreArchivo = Date.now() + "_" + archivo.name;
+
+    const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
+      method: "PUT",
+      body: archivo
+    });
+
+    if (!subida.ok) {
+      alert("Error subiendo archivo");
+      return;
+    }
+
+    const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
+
+    // 🔹 calcular expiración
+    const ahora = new Date();
+    const expires = new Date(ahora.getTime() + mins * 60000);
+
+    // 🔹 insertar en DB (NO borrar normal)
+    const { error } = await db
+      .from("offers")
+      .insert([{
+        title: nombre,
+        description: oferta,
+        price: "",
+        address: direccion,
+        "media-url": mediaUrl,
+        "commerce-pin": pinActual,
+        type: "express",
+        expires_at: expires.toISOString()
+      }]);
+
+    if (error) {
+  console.error(error);
+  alert("Error guardando express: " + error.message);
+  return;
+    }
+
+    alert("Oferta express publicada");
+    volverFeed();
+
+  } catch (e) {
+    console.error(e);
+    alert("Error técnico: " + e.message);
+  }
+}
+async function cargarOfertas() {
+  trackEvent("visit");
+
+const lastVisit = localStorage.getItem("last_visit_date");
+const today = new Date().toDateString();
+
+if (lastVisit && lastVisit !== today) {
+  trackEvent("return_visit");
+}
+
+localStorage.setItem("last_visit_date", today);
+  const app = document.getElementById("app");
+
+  const { data, error } = await db
+    .from("offers")
+    .select("*")
+    .order("created_at", { ascending:false })
+    .limit(100);
+
+  if (error) {
+    console.error(error);
+    app.innerHTML = "<h1>OfferFind</h1><p>Error cargando ofertas</p>";
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    app.innerHTML = "<h1>OfferFind</h1><p>Todavía no hay ofertas publicadas</p>";
+    return;
+  }
+
+  app.innerHTML = "";
+  
+const listaFinal= data;
+
+listaFinal.forEach(oferta => {
+    if (oferta.type === "express" && oferta.expires_at) {
+  const caducada = new Date(oferta.expires_at) <= new Date();
+  if (caducada) return;
+    }
+    const media = oferta["media-url"];
+
+if (!media) return;
+    const esVideo = media.toLowerCase().includes(".mp4") || media.toLowerCase().includes(".mov") || media.toLowerCase().includes(".webm");
+
+    const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(oferta.address || oferta.title);
+
+    const div = document.createElement("div");
+    div.className = "offer-card";
+    div.style = "margin-bottom:40px;";
+
+    div.innerHTML = `
+  ${esVideo 
+    ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
+: `<img src="${media}">`
+  }
+<div class="offer-gradient"></div>
+  <div class="overlay-gradient"></div>
+
+  <div class="offer-info">
+    <h2>${oferta.title || "OfferFind"}</h2>
+
+    ${oferta.type === "express" && oferta.expires_at ? `
+      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
+    ` : ""}
+
+    <p class="offer-text">${oferta.description || ""}</p>
+  </div>
+<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+  IR | GO →
+</a>
+`;
+if (oferta.type === "express" && oferta.expires_at) {
+  const el = div.querySelector(`#timer-${oferta.id}`);
+
+  function actualizarTimer() {
+    const diff = new Date(oferta.expires_at) - new Date();
+
+    if (diff <= 0) {
+      el.innerText = "⛔ Expirada";
+      return;
+    }
+
+    const mins = Math.floor(diff / 60000);
+    const horas = Math.floor(mins / 60);
+    const minutos = mins % 60;
+
+    el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
+  }
+
+  actualizarTimer();
+  setInterval(actualizarTimer, 60000);
+}
+    app.appendChild(div);
+  });
+}
+
+cargarOfertas();
+ let slideActual = 0;
+let touchInicioY = 0;
+let scrollBloqueado = false;
+
+function irASlide(index) {
+  const cards = document.querySelectorAll(".offer-card");
+  if (!cards.length) return;
+
+  slideActual = Math.max(0, Math.min(index, cards.length - 1));
+
+  window.scrollTo({
+    top: cards[slideActual].offsetTop,
+    behavior: "smooth"
+  });
+
+  setTimeout(() => {
+    controlarVideosVisibles();
+  }, 450);
+}
+
+window.addEventListener("touchstart", (e) => {
+  touchInicioY = e.touches[0].clientY;
+}, { passive: false });
+
+window.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("touchend", (e) => {
+  if (scrollBloqueado) return;
+
+  const touchFinY = e.changedTouches[0].clientY;
+  const diferencia = touchInicioY - touchFinY;
+
+  if (Math.abs(diferencia) < 40) return;
+
+  scrollBloqueado = true;
+
+  if (diferencia > 0) {
+    irASlide(slideActual + 1);
+  } else {
+    irASlide(slideActual - 1);
+  }
+
+  setTimeout(() => {
+    scrollBloqueado = false;
+  }, 600);
+}, { passive: false });
+  function controlarVideosVisibles() {
+  const videos = document.querySelectorAll("video");
+
+  videos.forEach((video, index) => {
+    const rect = video.getBoundingClientRect();
+
+    const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+
+    if (visible) {
+      // 🔥 cargar vídeo si no tiene src
+      if (!video.src) {
+        video.src = video.dataset.src;
+      }
+
+      video.muted = !sonidoActivo;
+      video.play().catch(() => {});
+    } else {
+      // ❌ descargar vídeo para liberar memoria
+      if (video.src) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+    }
+  });
+  }
+  window.addEventListener("scroll", controlarVideosVisibles);
+
+window.addEventListener("touchend", () => {
+  setTimeout(controlarVideosVisibles, 300);
+});
+  
+</script>
+
+</body>
+</html>
