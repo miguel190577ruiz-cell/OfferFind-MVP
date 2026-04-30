@@ -662,17 +662,18 @@ const archivo = document.getElementById("videoInput").files[0];
     alert("Error técnico: " + e.message);
   }
 }
-async function cargarOfertas() {
+  async function cargarOfertas() {
   trackEvent("visit");
 
-const lastVisit = localStorage.getItem("last_visit_date");
-const today = new Date().toDateString();
+  const lastVisit = localStorage.getItem("last_visit_date");
+  const today = new Date().toDateString();
 
-if (lastVisit && lastVisit !== today) {
-  trackEvent("return_visit");
-}
+  if (lastVisit && lastVisit !== today) {
+    trackEvent("return_visit");
+  }
 
-localStorage.setItem("last_visit_date", today);
+  localStorage.setItem("last_visit_date", today);
+
   const app = document.getElementById("app");
 
   const { data, error } = await db
@@ -693,28 +694,26 @@ localStorage.setItem("last_visit_date", today);
   }
 
   app.innerHTML = "";
-  
-const listaFinal= data;
 
-listaFinal.forEach(async oferta => {
+  for (const oferta of data) {
     if (oferta.type === "express" && oferta.expires_at) {
-  const caducada = new Date(oferta.expires_at) <= new Date();
+      const caducada = new Date(oferta.expires_at) <= new Date();
 
-  if (caducada) {
-    if (oferta["media-url"]) {
-      await fetch(WORKER_URL + "?file=" + encodeURIComponent(oferta["media-url"].split("/").pop()), {
-        method: "DELETE"
-      });
+      if (caducada) {
+        if (oferta["media-url"]) {
+          await fetch(WORKER_URL + "?file=" + encodeURIComponent(oferta["media-url"].split("/").pop()), {
+            method: "DELETE"
+          });
+        }
+
+        await db.from("offers").delete().eq("id", oferta.id);
+        continue;
+      }
     }
 
-    await db.from("offers").delete().eq("id", oferta.id);
-
-    return;
-  }
-    }
     const media = oferta["media-url"];
+    if (!media) continue;
 
-if (!media) return;
     const esVideo = media.toLowerCase().includes(".mp4") || media.toLowerCase().includes(".mov") || media.toLowerCase().includes(".webm");
 
     const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(oferta.address || oferta.title);
@@ -723,169 +722,73 @@ if (!media) return;
     div.className = "offer-card";
     div.style = "margin-bottom:40px;";
 
-   div.innerHTML = `
-  ${esVideo 
-    ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
-    : `<img src="${media}">`
-  }
+    div.innerHTML = `
+      ${esVideo 
+        ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
+        : `<img src="${media}">`
+      }
 
-  <div class="offer-gradient"></div>
-  <div class="overlay-gradient"></div>
+      <div class="offer-gradient"></div>
+      <div class="overlay-gradient"></div>
 
-  ${oferta.old_price ? `
-    <div class="old-price-floating">
-      <span class="old-price-label">antes</span>
-      <p class="old-price">${oferta.old_price}</p>
-    </div>
-  ` : ""}
+      ${oferta.old_price ? `
+        <div class="old-price-floating">
+          <span class="old-price-label">antes</span>
+          <p class="old-price">${oferta.old_price}</p>
+        </div>
+      ` : ""}
 
-  <div class="offer-info">
-    <h2>${oferta.title || "OfferFind"}</h2>
+      <div class="offer-info">
+        <h2>${oferta.title || "OfferFind"}</h2>
 
-    ${oferta.type === "express" && oferta.expires_at ? `
-      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
-    ` : ""}
+        ${oferta.type === "express" && oferta.expires_at ? `
+          <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
+        ` : ""}
 
-    <p class="offer-text">${oferta.description || ""}</p>
+        <p class="offer-text">${oferta.description || ""}</p>
 
-    ${oferta.price ? `
-      <div class="price-row">
-        <p class="offer-price">${oferta.price}</p>
+        ${oferta.price ? `
+          <div class="price-row">
+            <p class="offer-price">${oferta.price}</p>
+          </div>
+        ` : ""}
       </div>
-    ` : ""}
-  </div>
 
-  <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
-    IR | GO →
-  </a>
-`; 
-  <div class="offer-info">
-    <h2>${oferta.title || "OfferFind"}</h2>
+      <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+        IR | GO →
+      </a>
+    `;
 
-    ${oferta.type === "express" && oferta.expires_at ? `
-      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
-    ` : ""}
+    if (oferta.type === "express" && oferta.expires_at) {
+      const el = div.querySelector(`#timer-${oferta.id}`);
 
-    <p class="offer-text">${oferta.description || ""}</p>
-    ${oferta.price ? `
-  <div class="price-row">
-    <p class="offer-price">${oferta.price}</p>
-    ${oferta.old_price ? `<div class="old-price-box"><span class="old-price-label">antes</span><p class="old-price">${oferta.old_price}</p></div>` : ""}
-  </div>
-` : ""}
-  </div>
-<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
-  IR | GO →
-</a>
-`;
-if (oferta.type === "express" && oferta.expires_at) {
-  const el = div.querySelector(`#timer-${oferta.id}`);
+      function actualizarTimer() {
+        const diff = new Date(oferta.expires_at) - new Date();
 
-  function actualizarTimer() {
-    const diff = new Date(oferta.expires_at) - new Date();
+        if (diff <= 0) {
+          el.innerText = "⛔ Expirada";
+          return;
+        }
 
-    if (diff <= 0) {
-      el.innerText = "⛔ Expirada";
-      return;
+        const mins = Math.floor(diff / 60000);
+        const horas = Math.floor(mins / 60);
+        const minutos = mins % 60;
+
+        el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
+      }
+
+      actualizarTimer();
+      setInterval(actualizarTimer, 60000);
     }
 
-    const mins = Math.floor(diff / 60000);
-    const horas = Math.floor(mins / 60);
-    const minutos = mins % 60;
-
-    el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
-  }
-
-  actualizarTimer();
-  setInterval(actualizarTimer, 60000);
-}
     app.appendChild(div);
-  });
-  setTimeout(() => {
-  controlarVideosVisibles();
-}, 300);
-}
-
-cargarOfertas();
- let slideActual = 0;
-let touchInicioY = 0;
-let scrollBloqueado = false;
-
-function irASlide(index) {
-  const cards = document.querySelectorAll(".offer-card");
-  if (!cards.length) return;
-
-  slideActual = Math.max(0, Math.min(index, cards.length - 1));
-
-  window.scrollTo({
-    top: cards[slideActual].offsetTop,
-    behavior: "smooth"
-  });
+  }
 
   setTimeout(() => {
     controlarVideosVisibles();
-  }, 450);
+  }, 300);
 }
-
-window.addEventListener("touchstart", (e) => {
-  touchInicioY = e.touches[0].clientY;
-}, { passive: false });
-
-window.addEventListener("touchmove", (e) => {
-  e.preventDefault();
-}, { passive: false });
-
-window.addEventListener("touchend", (e) => {
-  if (scrollBloqueado) return;
-
-  const touchFinY = e.changedTouches[0].clientY;
-  const diferencia = touchInicioY - touchFinY;
-
-  if (Math.abs(diferencia) < 40) return;
-
-  scrollBloqueado = true;
-
-  if (diferencia > 0) {
-    irASlide(slideActual + 1);
-  } else {
-    irASlide(slideActual - 1);
-  }
-
-  setTimeout(() => {
-    scrollBloqueado = false;
-  }, 600);
-}, { passive: false });
-  function controlarVideosVisibles() {
-  const videos = document.querySelectorAll("video");
-
-  videos.forEach((video, index) => {
-    const rect = video.getBoundingClientRect();
-
-    const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
-
-    if (visible) {
-      // 🔥 cargar vídeo si no tiene src
-      if (!video.src) {
-        video.src = video.dataset.src;
-      }
-
-      video.muted = !sonidoActivo;
-      video.play().catch(() => {});
-    } else {
-      // ❌ descargar vídeo para liberar memoria
-      if (video.src) {
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
-      }
-    }
-  });
-  }
-  window.addEventListener("scroll", controlarVideosVisibles);
-
-window.addEventListener("touchend", () => {
-  setTimeout(controlarVideosVisibles, 300);
-});
+);
   
 </script>
 
