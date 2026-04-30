@@ -736,7 +736,10 @@ if (!media) return;
     ${oferta.price ? `
   <div class="price-row">
     <p class="offer-price">${oferta.price}</p>
-    ${oferta.old_price ? `<p class="old-price">antes ${oferta.old_price}</p>` : ""}
+    ${oferta.old_price ? `
+  <div class="old-price-box">
+    <span class="old-price-label">antes</span>
+    <p class="old-price">${oferta.old_price}</p>
   </div>
 ` : ""}
   </div>
