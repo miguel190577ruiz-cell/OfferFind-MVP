@@ -724,7 +724,12 @@ if (!media) return;
   }
 <div class="offer-gradient"></div>
   <div class="overlay-gradient"></div>
-
+${oferta.old_price ? `
+  <div class="old-price-floating">
+    <span class="old-price-label">antes</span>
+    <p class="old-price">${oferta.old_price}</p>
+  </div>
+` : ""}
   <div class="offer-info">
     <h2>${oferta.title || "OfferFind"}</h2>
 
