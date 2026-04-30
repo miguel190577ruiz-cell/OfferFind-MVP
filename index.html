@@ -355,6 +355,7 @@ async function publicarOferta() {
   const direccion = document.getElementById("direccionLocal").value.trim();
   const oferta = document.getElementById("descripcionOferta").value.trim();
   const precio = document.getElementById("precioOferta").value.trim();
+  const precioAntes = document.getElementById("precioAntesOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
   if (archivo && archivo.type.startsWith("video/")) {
   const duracionOk = await new Promise((resolve) => {
