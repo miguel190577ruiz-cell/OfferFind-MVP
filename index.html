@@ -723,29 +723,42 @@ if (!media) return;
     div.className = "offer-card";
     div.style = "margin-bottom:40px;";
 
-    div.innerHTML = `
+   div.innerHTML = `
   ${esVideo 
     ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
-: `<img src="${media}">`
+    : `<img src="${media}">`
   }
-<div class="offer-gradient"></div>
+
+  <div class="offer-gradient"></div>
   <div class="overlay-gradient"></div>
-${oferta.old_price ? `
-  <div class="old-price-floating">
-    <span class="old-price-label">antes</span>
+
+  ${oferta.old_price ? `
+    <div class="old-price-floating">
+      <span class="old-price-label">antes</span>
+      <p class="old-price">${oferta.old_price}</p>
+    </div>
+  ` : ""}
+
+  <div class="offer-info">
+    <h2>${oferta.title || "OfferFind"}</h2>
+
+    ${oferta.type === "express" && oferta.expires_at ? `
+      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
+    ` : ""}
+
     <p class="offer-text">${oferta.description || ""}</p>
 
-${oferta.price ? `
-  <div class="price-row">
-    <p class="offer-price">${oferta.price}</p>
+    ${oferta.price ? `
+      <div class="price-row">
+        <p class="offer-price">${oferta.price}</p>
+      </div>
+    ` : ""}
   </div>
-` : ""}
 
-</div>
-<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
-  IR | GO →
-</a>
-`;
+  <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+    IR | GO →
+  </a>
+`; 
   <div class="offer-info">
     <h2>${oferta.title || "OfferFind"}</h2>
 
