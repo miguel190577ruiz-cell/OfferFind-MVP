@@ -91,15 +91,7 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   margin: 18px 0 0 0;
   text-shadow: 0 3px 12px black;
 }
-.offer-price {
-  display: inline-block;
-  background: #ff2d2d;
-  color: white;
-  font-size: 20px;
-  font-weight: 900;
-  padding: 6px 12px;
-  border-radius: 10px;
-}
+
 .express-text {
   color: #ff2a00;
   font-size: 18px;
@@ -163,44 +155,6 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.price-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.old-price-floating {
-  position: absolute;
-  right: 24px;
-  bottom: 155px;
-  z-index: 10;
-  border: 1px solid rgba(255,255,255,0.45);
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  border-radius: 14px;
-  padding: 6px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.1;
-}
-
-.old-price-label {
-  color: white;
-  font-size: 13px;
-  opacity: 0.9;
-  margin-bottom: 4px;
-}
-
-.old-price {
-  color: white;
-  font-size: 18px;
-  opacity: 1;
-  text-decoration: line-through;
-  margin: 0;
-}
   }
 </style>
 </head>
@@ -226,9 +180,7 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   <h2>Mi comercio</h2>
   <input id="nombreLocal" placeholder="Nombre del local">
   <input id="direccionLocal" placeholder="Dirección">
-  <input id="descripcionOferta" placeholder="Descripción de la oferta">
-<input id="precioOferta" placeholder="Precio (ej: 5€, 2x1, etc)">
-  <input id="precioAntesOferta" placeholder="Precio antes (opcional)">
+  <input id="descripcionOferta" placeholder="Oferta y precio">
   <input type="file" id="videoInput" accept="video/*,image/*">
   <button class="admin-btn" onclick="publicarOferta()">Publicar oferta</button>
   <button class="volver-btn" onclick="borrarOfertaNormal()">
@@ -350,7 +302,7 @@ async function entrarComercio() {
 function entrarAdmin() {
   const pin = prompt("PIN administrador");
 
-  if (pin !== "1414") {
+  if (pin !== "1234") {
     alert("PIN incorrecto");
     return;
   }
@@ -392,8 +344,6 @@ async function publicarOferta() {
   const nombre = document.getElementById("nombreLocal").value.trim();
   const direccion = document.getElementById("direccionLocal").value.trim();
   const oferta = document.getElementById("descripcionOferta").value.trim();
-  const precio = document.getElementById("precioOferta").value.trim();
-  const precioAntes = document.getElementById("precioAntesOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
   if (archivo && archivo.type.startsWith("video/")) {
   const duracionOk = await new Promise((resolve) => {
@@ -470,8 +420,7 @@ if (!subida.ok) {
   .insert([{
     title: nombre,
     description: oferta,
-    price:precio,
-    old_price: precioAntes || null,
+    price: "",
     address: direccion,
     "media-url": mediaUrl,
     "commerce-pin": pinActual,
@@ -589,7 +538,6 @@ async function publicarExpress() {
 const nombre = document.getElementById("nombreLocal").value.trim();
 const direccion = document.getElementById("direccionLocal").value.trim();
 const oferta = document.getElementById("descripcionOferta").value.trim();
-   const precio = document.getElementById("precioOferta").value.trim(); 
 const archivo = document.getElementById("videoInput").files[0];
    if (archivo && archivo.type.startsWith("video/")) {
   const duracionOk = await new Promise((resolve) => {
@@ -640,7 +588,7 @@ const archivo = document.getElementById("videoInput").files[0];
       .insert([{
         title: nombre,
         description: oferta,
-        price:precio,
+        price: "",
         address: direccion,
         "media-url": mediaUrl,
         "commerce-pin": pinActual,
@@ -662,18 +610,17 @@ const archivo = document.getElementById("videoInput").files[0];
     alert("Error técnico: " + e.message);
   }
 }
-  async function cargarOfertas() {
+async function cargarOfertas() {
   trackEvent("visit");
 
-  const lastVisit = localStorage.getItem("last_visit_date");
-  const today = new Date().toDateString();
+const lastVisit = localStorage.getItem("last_visit_date");
+const today = new Date().toDateString();
 
-  if (lastVisit && lastVisit !== today) {
-    trackEvent("return_visit");
-  }
+if (lastVisit && lastVisit !== today) {
+  trackEvent("return_visit");
+}
 
-  localStorage.setItem("last_visit_date", today);
-
+localStorage.setItem("last_visit_date", today);
   const app = document.getElementById("app");
 
   const { data, error } = await db
@@ -694,26 +641,17 @@ const archivo = document.getElementById("videoInput").files[0];
   }
 
   app.innerHTML = "";
+  
+const listaFinal= data;
 
-  for (const oferta of data) {
+listaFinal.forEach(oferta => {
     if (oferta.type === "express" && oferta.expires_at) {
-      const caducada = new Date(oferta.expires_at) <= new Date();
-
-      if (caducada) {
-        if (oferta["media-url"]) {
-          await fetch(WORKER_URL + "?file=" + encodeURIComponent(oferta["media-url"].split("/").pop()), {
-            method: "DELETE"
-          });
-        }
-
-        await db.from("offers").delete().eq("id", oferta.id);
-        continue;
-      }
+  const caducada = new Date(oferta.expires_at) <= new Date();
+  if (caducada) return;
     }
-
     const media = oferta["media-url"];
-    if (!media) continue;
 
+if (!media) return;
     const esVideo = media.toLowerCase().includes(".mp4") || media.toLowerCase().includes(".mov") || media.toLowerCase().includes(".webm");
 
     const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(oferta.address || oferta.title);
@@ -723,72 +661,134 @@ const archivo = document.getElementById("videoInput").files[0];
     div.style = "margin-bottom:40px;";
 
     div.innerHTML = `
-      ${esVideo 
-        ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
-        : `<img src="${media}">`
-      }
+  ${esVideo 
+    ? `<video data-src="${media}" muted loop playsinline preload="none"></video>` 
+: `<img src="${media}">`
+  }
+<div class="offer-gradient"></div>
+  <div class="overlay-gradient"></div>
 
-      <div class="offer-gradient"></div>
-      <div class="overlay-gradient"></div>
+  <div class="offer-info">
+    <h2>${oferta.title || "OfferFind"}</h2>
 
-      ${oferta.old_price ? `
-        <div class="old-price-floating">
-          <span class="old-price-label">antes</span>
-          <p class="old-price">${oferta.old_price}</p>
-        </div>
-      ` : ""}
+    ${oferta.type === "express" && oferta.expires_at ? `
+      <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
+    ` : ""}
 
-      <div class="offer-info">
-        <h2>${oferta.title || "OfferFind"}</h2>
+    <p class="offer-text">${oferta.description || ""}</p>
+  </div>
+<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+  IR | GO →
+</a>
+`;
+if (oferta.type === "express" && oferta.expires_at) {
+  const el = div.querySelector(`#timer-${oferta.id}`);
 
-        ${oferta.type === "express" && oferta.expires_at ? `
-          <div class="express-text" id="timer-${oferta.id}">⚡ EXPRESS</div>
-        ` : ""}
+  function actualizarTimer() {
+    const diff = new Date(oferta.expires_at) - new Date();
 
-        <p class="offer-text">${oferta.description || ""}</p>
-
-        ${oferta.price ? `
-          <div class="price-row">
-            <p class="offer-price">${oferta.price}</p>
-          </div>
-        ` : ""}
-      </div>
-
-      <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
-        IR | GO →
-      </a>
-    `;
-
-    if (oferta.type === "express" && oferta.expires_at) {
-      const el = div.querySelector(`#timer-${oferta.id}`);
-
-      function actualizarTimer() {
-        const diff = new Date(oferta.expires_at) - new Date();
-
-        if (diff <= 0) {
-          el.innerText = "⛔ Expirada";
-          return;
-        }
-
-        const mins = Math.floor(diff / 60000);
-        const horas = Math.floor(mins / 60);
-        const minutos = mins % 60;
-
-        el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
-      }
-
-      actualizarTimer();
-      setInterval(actualizarTimer, 60000);
+    if (diff <= 0) {
+      el.innerText = "⛔ Expirada";
+      return;
     }
 
-    app.appendChild(div);
+    const mins = Math.floor(diff / 60000);
+    const horas = Math.floor(mins / 60);
+    const minutos = mins % 60;
+
+    el.innerText = `⚡ EXPRESS · ${horas > 0 ? horas + "h " : ""}${minutos}min`;
   }
+
+  actualizarTimer();
+  setInterval(actualizarTimer, 60000);
+}
+    app.appendChild(div);
+  });
+  setTimeout(() => {
+  controlarVideosVisibles();
+}, 300);
+}
+
+cargarOfertas();
+ let slideActual = 0;
+let touchInicioY = 0;
+let scrollBloqueado = false;
+
+function irASlide(index) {
+  const cards = document.querySelectorAll(".offer-card");
+  if (!cards.length) return;
+
+  slideActual = Math.max(0, Math.min(index, cards.length - 1));
+
+  window.scrollTo({
+    top: cards[slideActual].offsetTop,
+    behavior: "smooth"
+  });
 
   setTimeout(() => {
     controlarVideosVisibles();
-  }, 300);
+  }, 450);
 }
 
+window.addEventListener("touchstart", (e) => {
+  touchInicioY = e.touches[0].clientY;
+}, { passive: false });
+
+window.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("touchend", (e) => {
+  if (scrollBloqueado) return;
+
+  const touchFinY = e.changedTouches[0].clientY;
+  const diferencia = touchInicioY - touchFinY;
+
+  if (Math.abs(diferencia) < 40) return;
+
+  scrollBloqueado = true;
+
+  if (diferencia > 0) {
+    irASlide(slideActual + 1);
+  } else {
+    irASlide(slideActual - 1);
+  }
+
+  setTimeout(() => {
+    scrollBloqueado = false;
+  }, 600);
+}, { passive: false });
+  function controlarVideosVisibles() {
+  const videos = document.querySelectorAll("video");
+
+  videos.forEach((video, index) => {
+    const rect = video.getBoundingClientRect();
+
+    const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.4;
+
+    if (visible) {
+      // 🔥 cargar vídeo si no tiene src
+      if (!video.src) {
+        video.src = video.dataset.src;
+      }
+
+      video.muted = !sonidoActivo;
+      video.play().catch(() => {});
+    } else {
+      // ❌ descargar vídeo para liberar memoria
+      if (video.src) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+    }
+  });
+  }
+  window.addEventListener("scroll", controlarVideosVisibles);
+
+window.addEventListener("touchend", () => {
+  setTimeout(controlarVideosVisibles, 300);
+});
   
 </script>
 
