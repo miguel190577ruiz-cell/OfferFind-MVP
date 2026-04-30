@@ -762,9 +762,19 @@ if (!media) return;
 ${oferta.old_price ? `
   <div class="old-price-floating">
     <span class="old-price-label">antes</span>
-    <p class="old-price">${oferta.old_price}</p>
+    <p class="offer-text">${oferta.description || ""}</p>
+
+${oferta.price ? `
+  <div class="price-row">
+    <p class="offer-price">${oferta.price}</p>
   </div>
 ` : ""}
+
+</div>
+<a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
+  IR | GO →
+</a>
+`;
   <div class="offer-info">
     <h2>${oferta.title || "OfferFind"}</h2>
 
