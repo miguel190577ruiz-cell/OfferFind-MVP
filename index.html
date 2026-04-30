@@ -162,25 +162,23 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   to {
     opacity: 1;
     transform: translateY(0);
-    
   }
-    .price-row {
+}
+
+.price-row {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.old-price {
-  color: white;
-  font-size: 18px;
-  opacity: 1;
-  text-decoration: line-through;
-  margin: 0;
-}
-
-.old-price-box {
+.old-price-floating {
+  position: absolute;
+  right: 24px;
+  bottom: 155px;
+  z-index: 10;
   border: 1px solid rgba(255,255,255,0.45);
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
   border-radius: 14px;
   padding: 6px 14px;
   display: flex;
@@ -195,38 +193,11 @@ input { width:100%; padding:14px; margin:10px 0; border-radius:12px; border:none
   opacity: 0.9;
   margin-bottom: 4px;
 }
-  .offer-card {
-  position: relative; /* clave para que posicione bien */
-}
-
-.old-price-floating {
-  position: absolute;
-  right: 16px;
-  bottom: 120px; /* ajusta según tu layout */
-  z-index: 5;
-
-  border: 1px solid rgba(255,255,255,0.5);
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  border-radius: 14px;
-
-  padding: 8px 14px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.1;
-}
-
-.old-price-label {
-  color: #fff;
-  font-size: 12px;
-  opacity: 0.9;
-  margin-bottom: 2px;
-}
 
 .old-price {
-  color: #fff;
+  color: white;
   font-size: 18px;
+  opacity: 1;
   text-decoration: line-through;
   margin: 0;
 }
