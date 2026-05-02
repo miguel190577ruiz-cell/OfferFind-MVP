@@ -361,29 +361,27 @@ async function publicarOferta() {
   const oferta = document.getElementById("descripcionOferta").value.trim();
   const precio = document.getElementById("precioOferta").value.trim();
   const archivo = document.getElementById("videoInput").files[0];
+
   if (archivo && archivo.type.startsWith("video/")) {
-  const duracionOk = await new Promise((resolve) => {
-    const video = document.createElement("video");
-    video.preload = "metadata";
+    const duracionOk = await new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
 
-    video.onloadedmetadata = () => {
-      URL.revokeObjectURL(video.src);
-      resolve(video.duration <= 8);
-    };
-video.src = URL.createObjectURL(archivo);
-  });
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(video.duration <= 8);
+      };
 
-  if (!duracionOk) {
-    alert("El vídeo debe durar máximo 8 segundos");
-    document.getElementById("videoInput").value = "";
-    return;
+      video.src = URL.createObjectURL(archivo);
+    });
+
+    if (!duracionOk) {
+      alert("El vídeo debe durar máximo 8 segundos");
+      document.getElementById("videoInput").value = "";
+      return;
+    }
   }
-  }
-  
-nombreActual = nombre;
-direccionActual = direccion;
-ofertaActual = oferta;
-archivoActual = archivo;
+
   if (!pinActual) {
     alert("Primero entra con un PIN de comercio válido");
     return;
@@ -395,22 +393,22 @@ archivoActual = archivo;
   }
 
   try {
-    // 🔍 BUSCAR OFERTA NORMAL ANTERIOR
-const { data: anteriores } = await db
-  .from("offers")
-  .select("media-url")
-  .eq("commerce-pin", pinActual)
-  .eq("type", "normal")
-    // 🧹 BORRAR ARCHIVO ANTIGUO EN R2
-for (const oferta of anteriores || []) {
-  if (oferta["media-url"]) {
-    const fileName = oferta["media-url"].split("/").pop()
+    const { data: anteriores } = await db
+      .from("offers")
+      .select("media-url")
+      .eq("commerce-pin", pinActual)
+      .eq("type", "normal");
 
-    await fetch(WORKER_URL + "?file=" + encodeURIComponent(fileName), {
-  method: "DELETE"
-});
-  }
-}
+    for (const ofertaAnterior of anteriores || []) {
+      if (ofertaAnterior["media-url"]) {
+        const fileName = ofertaAnterior["media-url"].split("/").pop();
+
+        await fetch(WORKER_URL + "?file=" + encodeURIComponent(fileName), {
+          method: "DELETE"
+        });
+      }
+    }
+
     const nombreArchivo = Date.now() + "-" + archivo.name;
 
     const subida = await fetch(WORKER_URL + encodeURIComponent(nombreArchivo), {
@@ -418,45 +416,46 @@ for (const oferta of anteriores || []) {
       body: archivo
     });
 
-if (!subida.ok) {
-  alert("Error subiendo vídeo/foto. Código: " + subida.status);
-  return;
-}
+    if (!subida.ok) {
+      alert("Error subiendo vídeo/foto. Código: " + subida.status);
+      return;
+    }
 
     const mediaUrl = WORKER_URL + encodeURIComponent(nombreArchivo);
 
     await db
       .from("offers")
-     .delete()
-.eq("commerce-pin", pinActual)
-.eq("type", "normal");
+      .delete()
+      .eq("commerce-pin", pinActual)
+      .eq("type", "normal");
 
     const { error } = await db
-  .from("offers")
-  .insert([{
-    title: nombre,
-    description: oferta,
-    price:precio,
-    address: direccion,
-    "media-url": mediaUrl,
-    "commerce-pin": pinActual,
-    type:"normal"
-  }]);
+      .from("offers")
+      .insert([{
+        title: nombre,
+        description: oferta,
+        price: precio,
+        address: direccion,
+        "media-url": mediaUrl,
+        "commerce-pin": pinActual,
+        type: "normal"
+      }]);
 
-   if (error) {
-  console.error(error);
-  alert("Supabase: " + error.message);
-  return;
-   }
+    if (error) {
+      console.error(error);
+      alert("Supabase: " + error.message);
+      return;
+    }
 
     alert("Oferta publicada");
     volverFeed();
 
   } catch (e) {
-  console.error(e);
-  alert("Error técnico: " + e.message);
+    console.error(e);
+    alert("Error técnico: " + e.message);
   }
 }
+
  async function borrarOfertaNormal() {
   if (!pinActual) {
     alert("No hay comercio activo");
