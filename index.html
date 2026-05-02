@@ -676,6 +676,18 @@ if (!media) return;
     ` : ""}
 
     <p class="offer-text">${oferta.description || ""}</p>
+    ${oferta.price ? `
+  <div class="price-row">
+    <p class="offer-price">${oferta.price}</p>
+
+    ${oferta.old_price ? `
+      <div class="old-price-box">
+        <span class="old-price-label">antes</span>
+        <p class="old-price">${oferta.old_price}</p>
+      </div>
+    ` : ""}
+  </div>
+` : ""}
   </div>
 <a class="go-btn" href="${mapsUrl}" target="_blank" onclick="trackEvent('go_click', '${oferta.id}')">
   IR | GO →
