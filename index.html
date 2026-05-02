@@ -627,7 +627,7 @@ localStorage.setItem("last_visit_date", today);
     .from("offers")
     .select("*")
     .order("created_at", { ascending:false })
-    .limit(50);
+    .limit(100);
 
   if (error) {
     console.error(error);
@@ -704,9 +704,6 @@ if (oferta.type === "express" && oferta.expires_at) {
 }
     app.appendChild(div);
   });
-  setTimeout(() => {
-  controlarVideosVisibles();
-}, 300);
 }
 
 cargarOfertas();
